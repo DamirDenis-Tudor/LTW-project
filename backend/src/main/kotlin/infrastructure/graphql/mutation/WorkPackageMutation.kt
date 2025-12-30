@@ -2,6 +2,7 @@ package infrastructure.graphql.mutation
 
 import application.usecase.interfaces.WorkPackageUseCase
 import com.expediagroup.graphql.server.operations.Mutation
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import domain.model.UserRole
 import graphql.schema.DataFetchingEnvironment
 import infrastructure.graphql.context.validateRoles
@@ -13,9 +14,10 @@ class WorkPackageMutation : Mutation {
 
     private val workPackageUseCase = GlobalContext.get().get<WorkPackageUseCase>()
 
+    @GraphQLDescription("Create a new work package (Admin and Manager only)")
     fun createWorkPackage(
         dataFetchingEnvironment: DataFetchingEnvironment,
-        input: WorkPackageInput
+        @GraphQLDescription("Work package input data") input: WorkPackageInput
     ): WorkPackageResponse = dataFetchingEnvironment.graphQlContext.validateRoles(
         allowedRoles = listOf(UserRole.ADMIN, UserRole.MANAGER)
     ) { user ->
@@ -23,9 +25,10 @@ class WorkPackageMutation : Mutation {
         WorkPackageResponse(workPackage)
     }
 
+    @GraphQLDescription("Delete a work package (Admin only)")
     fun removeWorkPackage(
         dataFetchingEnvironment: DataFetchingEnvironment,
-        id: String
+        @GraphQLDescription("ID of the work package to delete") id: String
     ): Boolean = dataFetchingEnvironment.graphQlContext.validateRoles(
         allowedRoles = listOf(UserRole.ADMIN)
     ) {

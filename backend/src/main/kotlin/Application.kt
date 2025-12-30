@@ -7,11 +7,12 @@ import io.ktor.server.response.*
 import org.koin.core.context.GlobalContext
 import org.koin.ktor.plugin.Koin
 import application.di.useCaseModule
-import infrastructure.graphql.context.AuthenticationException
-import infrastructure.graphql.context.AuthorizationException
+import application.exception.AuthenticationException
+import application.exception.AuthorizationException
+import application.exception.NotFoundException
 import infrastructure.graphql.configureGraphQL
 import infrastructure.graphql.di.graphQLModule
-import domain.repository.*
+import application.usecase.interfaces.*
 import infrastructure.persistence.initializeSampleData
 import infrastructure.persistence.di.persistenceModule
 
@@ -31,11 +32,11 @@ fun Application.module() {
     
     // Initialize sample data after Koin is set up
     initializeSampleData(
-        GlobalContext.get().get<UserRepository>(),
-        GlobalContext.get().get<OrganizationRepository>(),
-        GlobalContext.get().get<ProjectRepository>(),
-        GlobalContext.get().get<DeliverableRepository>(),
-        GlobalContext.get().get<WorkPackageRepository>()
+        GlobalContext.get().get<UserUseCase>(),
+        GlobalContext.get().get<OrganizationUseCase>(),
+        GlobalContext.get().get<ProjectUseCase>(),
+        GlobalContext.get().get<DeliverableUseCase>(),
+        GlobalContext.get().get<WorkPackageUseCase>()
     )
     
     install(StatusPages) {
@@ -44,6 +45,9 @@ fun Application.module() {
         }
         exception<AuthorizationException> { call, cause ->
             call.respond(HttpStatusCode.Forbidden, cause.message ?: "Insufficient permissions")
+        }
+        exception<NotFoundException> { call, cause ->
+            call.respond(HttpStatusCode.NotFound, cause.message ?: "Not found")
         }
     }
     

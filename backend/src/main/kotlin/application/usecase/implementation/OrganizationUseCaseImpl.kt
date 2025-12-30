@@ -1,11 +1,13 @@
 package application.usecase.implementation
 
 import application.common.Page
+import application.input.OrganizationInputContract
 import application.usecase.interfaces.OrganizationUseCase
 import domain.model.Organization
 import domain.model.User
 import domain.repository.OrganizationRepository
 import domain.repository.UserRepository
+import java.util.*
 
 class OrganizationUseCaseImpl(
     private val organizationRepository: OrganizationRepository,
@@ -30,5 +32,15 @@ class OrganizationUseCaseImpl(
             totalCount = totalCount,
             hasNextPage = offset + limit < totalCount
         )
+    }
+
+    override fun createOrganization(dto: OrganizationInputContract): Organization {
+        val organization = Organization(
+            id = UUID.randomUUID().toString(),
+            name = dto.name,
+            picCode = dto.picCode,
+            country = dto.country
+        )
+        return organizationRepository.save(organization)
     }
 }

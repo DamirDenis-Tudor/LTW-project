@@ -1,12 +1,11 @@
 package infrastructure.graphql.context
 
-import graphql.GraphQLContext
 import application.common.UserJwt
+import application.exception.AuthenticationException
+import application.exception.AuthorizationException
 import application.usecase.implementation.JwtUseCaseImpl
 import domain.model.UserRole
-
-class AuthenticationException(message: String) : Exception(message)
-class AuthorizationException(message: String) : Exception(message)
+import graphql.GraphQLContext
 
 fun GraphQLContext.getCurrentUser(): UserJwt? = get("currentUser")
 fun GraphQLContext.getToken(): String? = get("token")

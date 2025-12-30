@@ -49,6 +49,56 @@ class InMemoryProjectRepository : ProjectRepository {
         return project
     }
 
+    override fun addWorkPackageToProject(projectId: String, workPackageId: String): Project? {
+        val project = findById(projectId) ?: return null
+        val updatedProject = project.copy(
+            workPackageIds = project.workPackageIds + workPackageId
+        )
+        return save(updatedProject)
+    }
+
+    override fun removeWorkPackageFromProject(projectId: String, workPackageId: String): Project? {
+        val project = findById(projectId) ?: return null
+        val updatedProject = project.copy(
+            workPackageIds = project.workPackageIds - workPackageId
+        )
+        return save(updatedProject)
+    }
+
+    override fun addPartnerToProject(projectId: String, partnerId: String): Project? {
+        val project = findById(projectId) ?: return null
+        if (partnerId in project.partnerIds) return project
+        val updatedProject = project.copy(
+            partnerIds = project.partnerIds + partnerId
+        )
+        return save(updatedProject)
+    }
+
+    override fun removePartnerFromProject(projectId: String, partnerId: String): Project? {
+        val project = findById(projectId) ?: return null
+        val updatedProject = project.copy(
+            partnerIds = project.partnerIds - partnerId
+        )
+        return save(updatedProject)
+    }
+
+    override fun addManagerToProject(projectId: String, managerId: String): Project? {
+        val project = findById(projectId) ?: return null
+        if (managerId in project.managerIds) return project
+        val updatedProject = project.copy(
+            managerIds = project.managerIds + managerId
+        )
+        return save(updatedProject)
+    }
+
+    override fun removeManagerFromProject(projectId: String, managerId: String): Project? {
+        val project = findById(projectId) ?: return null
+        val updatedProject = project.copy(
+            managerIds = project.managerIds - managerId
+        )
+        return save(updatedProject)
+    }
+
     override fun delete(id: String) {
         projects.removeIf { it.id == id }
     }

@@ -1,6 +1,7 @@
 package infrastructure.graphql.query
 
 import com.expediagroup.graphql.server.operations.Query
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import graphql.schema.DataFetchingEnvironment
 import org.koin.core.context.GlobalContext
 import application.usecase.interfaces.UserUseCase
@@ -13,10 +14,11 @@ class UserQuery : Query {
 
     private val userUseCase = GlobalContext.get().get<UserUseCase>()
 
+    @GraphQLDescription("Get paginated list of all users (Admin only)")
     fun users(
         dataFetchingEnvironment: DataFetchingEnvironment,
-        limit: Int = 10,
-        offset: Int = 0
+        @GraphQLDescription("Maximum number of users to return") limit: Int = 10,
+        @GraphQLDescription("Number of users to skip for pagination") offset: Int = 0
     ): PaginatedUsers = dataFetchingEnvironment.graphQlContext.validateRoles(listOf(UserRole.ADMIN)) {
         val page = userUseCase.getAllUsers(limit, offset)
         PaginatedUsers(
@@ -26,9 +28,10 @@ class UserQuery : Query {
         )
     }
 
+    @GraphQLDescription("Get a specific user by ID (Admin only)")
     fun user(
         dataFetchingEnvironment: DataFetchingEnvironment,
-        id: String
+        @GraphQLDescription("Unique identifier of the user") id: String
     ): UserResponse? = dataFetchingEnvironment.graphQlContext.validateRoles(listOf(UserRole.ADMIN)) {
         userUseCase.getUserById(id)?.let {
             UserResponse(it)

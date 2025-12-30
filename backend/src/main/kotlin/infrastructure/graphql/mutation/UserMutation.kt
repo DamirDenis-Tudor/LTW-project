@@ -1,11 +1,12 @@
 package infrastructure.graphql.mutation
 
+import application.exception.AuthenticationException
 import application.usecase.implementation.JwtUseCaseImpl
 import application.usecase.interfaces.UserUseCase
 import com.expediagroup.graphql.server.operations.Mutation
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import domain.model.UserRole
 import graphql.schema.DataFetchingEnvironment
-import infrastructure.graphql.context.AuthenticationException
 import infrastructure.graphql.context.validateRoles
 import infrastructure.graphql.dto.input.UserInput
 import infrastructure.graphql.dto.response.UserResponse
@@ -15,15 +16,20 @@ class UserMutation : Mutation {
 
     private val userUseCase = GlobalContext.get().get<UserUseCase>()
 
-    fun authenticate(username: String, password: String): String {
+    @GraphQLDescription("Authenticate user with username and password, returns JWT token")
+    fun authenticate(
+        @GraphQLDescription("Username for authentication") username: String,
+        @GraphQLDescription("Password for authentication") password: String
+    ): String {
         val user = userUseCase.login(username, password)
             ?: throw AuthenticationException("Invalid credentials")
         return JwtUseCaseImpl.generateToken(user)
     }
 
+    @GraphQLDescription("Register a new user (Admin only)")
     fun registerUser(
         dataFetchingEnvironment: DataFetchingEnvironment,
-        input: UserInput
+        @GraphQLDescription("User input data") input: UserInput
     ): UserResponse = dataFetchingEnvironment.graphQlContext.validateRoles(
         allowedRoles = listOf(UserRole.ADMIN)
     ) {

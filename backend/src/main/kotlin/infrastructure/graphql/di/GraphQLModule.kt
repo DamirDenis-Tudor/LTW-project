@@ -13,4 +13,5 @@ val graphQLModule = module {
     single { UserMutation() }
     single { DeliverableMutation() }
     single { WorkPackageMutation() }
+    single { OrganizationMutation() }
 }

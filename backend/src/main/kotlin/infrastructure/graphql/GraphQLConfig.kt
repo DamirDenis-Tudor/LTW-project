@@ -8,6 +8,7 @@ import com.expediagroup.graphql.server.ktor.graphQLSDLRoute
 import com.expediagroup.graphql.server.ktor.graphiQLRoute
 import infrastructure.graphql.context.CustomGraphQLContextFactory
 import infrastructure.graphql.mutation.DeliverableMutation
+import infrastructure.graphql.mutation.OrganizationMutation
 import infrastructure.graphql.mutation.ProjectMutation
 import infrastructure.graphql.mutation.UserMutation
 import infrastructure.graphql.mutation.WorkPackageMutation
@@ -17,19 +18,21 @@ import infrastructure.graphql.query.UserQuery
 import infrastructure.graphql.query.WorkPackageQuery
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
+import org.koin.ktor.ext.inject
 
 @GraphQLDescription("GraphQL schema for EU Project Management")
 class ProjectSchema : Schema
 
 fun Application.configureGraphQL() {
-    val projectQuery = ProjectQuery()
-    val userQuery = UserQuery()
-    val organizationQuery = OrganizationQuery()
-    val workPackageQuery = WorkPackageQuery()
-    val projectMutation = ProjectMutation()
-    val userMutation = UserMutation()
-    val deliverableMutation = DeliverableMutation()
-    val workPackageMutation = WorkPackageMutation()
+    val projectQuery by inject<ProjectQuery>()
+    val userQuery by inject<UserQuery>()
+    val organizationQuery by inject<OrganizationQuery>()
+    val workPackageQuery by inject<WorkPackageQuery>()
+    val projectMutation by inject<ProjectMutation>()
+    val userMutation by inject<UserMutation>()
+    val organizationMutation by inject<OrganizationMutation>()
+    val deliverableMutation by inject<DeliverableMutation>()
+    val workPackageMutation by inject<WorkPackageMutation>()
     
     install(GraphQL) {
         schema {
@@ -47,6 +50,7 @@ fun Application.configureGraphQL() {
             mutations = listOf(
                 projectMutation,
                 userMutation,
+                organizationMutation,
                 deliverableMutation,
                 workPackageMutation
             )

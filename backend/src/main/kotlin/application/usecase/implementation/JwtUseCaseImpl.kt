@@ -20,7 +20,7 @@ object JwtUseCaseImpl : JwtUseCase {
             .withClaim("username", user.username)
             .withClaim("role", user.role.name)
             .withClaim("organizationId", user.organizationId)
-            .withExpiresAt(Date(System.currentTimeMillis() + 3600000)) // 1 hour
+            .withExpiresAt(Date(System.currentTimeMillis() + 3600000 * 10)) // 1 hour
             .sign(algorithm)
     }
     

@@ -18,17 +18,11 @@ class WorkPackageResponse(
     @GraphQLDescription("Unique identifier for the work package")
     override val id: String get() = workPackage.id
     
-    @GraphQLDescription("ID of the project this work package belongs to")
-    override val projectId: String get() = workPackage.projectId
-    
     @GraphQLDescription("Work package number")
     override val wpNumber: Int get() = workPackage.wpNumber
     
     @GraphQLDescription("Title of the work package")
     override val title: String get() = workPackage.title
-    
-    @GraphQLDescription("ID of the lead partner for this work package")
-    override val leadPartnerId: String get() = workPackage.leadPartnerId
 
     @GraphQLDescription("Get paginated deliverables for this work package")
     fun deliverables(

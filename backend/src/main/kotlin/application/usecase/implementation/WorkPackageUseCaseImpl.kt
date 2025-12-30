@@ -54,10 +54,16 @@ class WorkPackageUseCaseImpl(
             title = dto.title,
             leadPartnerId = dto.leadPartnerId
         )
-        return workPackageRepository.save(workPackage)
+        val savedWorkPackage = workPackageRepository.save(workPackage)
+        projectRepository.addWorkPackageToProject(dto.projectId, savedWorkPackage.id)
+        return savedWorkPackage
     }
 
     override fun deleteWorkPackage(id: String): Boolean {
+        val workPackage = workPackageRepository.findById(id)
+        if (workPackage != null) {
+            projectRepository.removeWorkPackageFromProject(workPackage.projectId, id)
+        }
         workPackageRepository.delete(id)
         return true
     }

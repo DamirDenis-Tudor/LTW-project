@@ -2,6 +2,7 @@ package infrastructure.graphql.mutation
 
 import application.usecase.interfaces.ProjectUseCase
 import com.expediagroup.graphql.server.operations.Mutation
+import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import domain.model.UserRole
 import graphql.schema.DataFetchingEnvironment
 import infrastructure.graphql.context.validateRoles
@@ -13,9 +14,10 @@ class ProjectMutation : Mutation {
 
     private val projectUseCase = GlobalContext.get().get<ProjectUseCase>()
 
+    @GraphQLDescription("Create a new project (Admin and Manager only)")
     fun createProject(
         dataFetchingEnvironment: DataFetchingEnvironment,
-        input: ProjectInput
+        @GraphQLDescription("Project input data") input: ProjectInput
     ): ProjectResponse = dataFetchingEnvironment.graphQlContext.validateRoles(
         allowedRoles = listOf(UserRole.ADMIN, UserRole.MANAGER)
     ) { user ->
@@ -23,19 +25,21 @@ class ProjectMutation : Mutation {
         ProjectResponse(project)
     }
 
+    @GraphQLDescription("Delete a project (Admin only)")
     fun removeProject(
         dataFetchingEnvironment: DataFetchingEnvironment,
-        id: String
+        @GraphQLDescription("ID of the project to delete") id: String
     ): Boolean = dataFetchingEnvironment.graphQlContext.validateRoles(
         allowedRoles = listOf(UserRole.ADMIN)
     ) {
         projectUseCase.deleteProject(id)
     }
 
+    @GraphQLDescription("Assign a partner to a project (Admin and Manager only)")
     fun assignPartnerToProject(
         dataFetchingEnvironment: DataFetchingEnvironment,
-        projectId: String,
-        partnerId: String
+        @GraphQLDescription("ID of the project") projectId: String,
+        @GraphQLDescription("ID of the partner to assign") partnerId: String
     ): ProjectResponse = dataFetchingEnvironment.graphQlContext.validateRoles(
         allowedRoles = listOf(UserRole.ADMIN, UserRole.MANAGER)
     ) { user ->
@@ -43,10 +47,11 @@ class ProjectMutation : Mutation {
         ProjectResponse(project)
     }
 
+    @GraphQLDescription("Assign a work package to a project (Admin and Manager only)")
     fun assignWorkPackageToProject(
         dataFetchingEnvironment: DataFetchingEnvironment,
-        projectId: String,
-        workPackageId: String
+        @GraphQLDescription("ID of the project") projectId: String,
+        @GraphQLDescription("ID of the work package to assign") workPackageId: String
     ): ProjectResponse = dataFetchingEnvironment.graphQlContext.validateRoles(
         allowedRoles = listOf(UserRole.ADMIN, UserRole.MANAGER)
     ) { user ->
@@ -54,10 +59,11 @@ class ProjectMutation : Mutation {
         ProjectResponse(project)
     }
 
+    @GraphQLDescription("Assign a manager to a project (Admin only)")
     fun assignManagerToProject(
         dataFetchingEnvironment: DataFetchingEnvironment,
-        projectId: String,
-        managerId: String
+        @GraphQLDescription("ID of the project") projectId: String,
+        @GraphQLDescription("ID of the manager to assign") managerId: String
     ): ProjectResponse = dataFetchingEnvironment.graphQlContext.validateRoles(
         allowedRoles = listOf(UserRole.ADMIN)
     ) { user ->

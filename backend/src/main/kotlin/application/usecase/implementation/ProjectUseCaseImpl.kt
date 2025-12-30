@@ -6,6 +6,8 @@ import application.common.UserJwt
 import application.usecase.interfaces.ProjectUseCase
 import domain.model.*
 import domain.repository.ProjectRepository
+import application.exception.NotFoundException
+import application.exception.AuthorizationException
 import java.util.*
 
 class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : ProjectUseCase {
@@ -29,11 +31,11 @@ class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : Pro
     }
 
     override fun getProjectById(id: String, user: UserJwt): Project? {
-        val project = projectRepository.findById(id) ?: return null
+        val project = projectRepository.findById(id) ?: throw NotFoundException("Project not found")
         return when (user.role) {
             UserRole.ADMIN -> project
-            UserRole.MANAGER -> if (user.id in project.managerIds) project else null
-            UserRole.PARTNER -> if (user.organizationId in project.partnerIds) project else null
+            UserRole.MANAGER -> if (user.id in project.managerIds) project else throw AuthorizationException("Access denied")
+            UserRole.PARTNER -> if (user.organizationId in project.partnerIds) project else throw AuthorizationException("Access denied")
         }
     }
 
@@ -74,20 +76,17 @@ class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : Pro
     }
 
     override fun addPartnerToProject(projectId: String, partnerId: String, user: UserJwt): Project {
-        val project = projectRepository.findById(projectId) ?: throw IllegalArgumentException("Project not found")
-        val updatedProject = project.copy(partnerIds = project.partnerIds + partnerId)
-        return projectRepository.save(updatedProject)
-    }
-
-    override fun addWorkPackageToProject(projectId: String, workPackageId: String, user: UserJwt): Project {
-        val project = projectRepository.findById(projectId) ?: throw IllegalArgumentException("Project not found")
-        val updatedProject = project.copy(workPackageIds = project.workPackageIds + workPackageId)
-        return projectRepository.save(updatedProject)
+        val project = projectRepository.addPartnerToProject(projectId, partnerId)
+        return project ?: throw NotFoundException("Project not found")
     }
 
     override fun addManagerToProject(projectId: String, managerId: String, user: UserJwt): Project {
-        val project = projectRepository.findById(projectId) ?: throw IllegalArgumentException("Project not found")
-        val updatedProject = project.copy(managerIds = project.managerIds + managerId)
-        return projectRepository.save(updatedProject)
+        val project = projectRepository.addManagerToProject(projectId, managerId)
+        return project ?: throw NotFoundException("Project not found")
+    }
+
+    override fun addWorkPackageToProject(projectId: String, workPackageId: String, user: UserJwt): Project {
+        val project = projectRepository.addWorkPackageToProject(projectId, workPackageId)
+        return project ?: throw NotFoundException("Project not found")
     }
 }

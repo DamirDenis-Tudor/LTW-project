@@ -15,5 +15,11 @@ interface ProjectRepository {
     fun countPartnersByProjectId(projectId: String): Int
     fun countManagersByProjectId(projectId: String): Int
     fun save(project: Project): Project
+    fun addWorkPackageToProject(projectId: String, workPackageId: String): Project?
+    fun removeWorkPackageFromProject(projectId: String, workPackageId: String): Project?
+    fun addPartnerToProject(projectId: String, partnerId: String): Project?
+    fun removePartnerFromProject(projectId: String, partnerId: String): Project?
+    fun addManagerToProject(projectId: String, managerId: String): Project?
+    fun removeManagerFromProject(projectId: String, managerId: String): Project?
     fun delete(id: String)
 }
