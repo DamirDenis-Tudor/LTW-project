@@ -21,25 +21,25 @@ fun initializeSampleData(
     )
     
     // Create organizations using use case
-    organizationUseCase.createOrganization(OrganizationInput(
+    val org1 = organizationUseCase.createOrganization(OrganizationInput(
         name = "University of Technology",
         picCode = 123456,
         country = "Germany"
     ))
     
-    organizationUseCase.createOrganization(OrganizationInput(
+    val org2 = organizationUseCase.createOrganization(OrganizationInput(
         name = "Research Institute",
         picCode = 789012,
         country = "France"
     ))
     
-    organizationUseCase.createOrganization(OrganizationInput(
+    val org3 = organizationUseCase.createOrganization(OrganizationInput(
         name = "Innovation Labs",
         picCode = 345678,
         country = "Spain"
     ))
     
-    organizationUseCase.createOrganization(OrganizationInput(
+    val org4 = organizationUseCase.createOrganization(OrganizationInput(
         name = "Tech Solutions",
         picCode = 901234,
         country = "Italy"
@@ -57,42 +57,42 @@ fun initializeSampleData(
         email = "manager1@example.com",
         password = "manager123",
         role = UserRole.MANAGER,
-        organizationId = "org1"
+        organizationId = org1.id
     ))
     val manager2 = userUseCase.createUser(UserInput(
         username = "manager2",
         email = "manager2@example.com",
         password = "manager123",
         role = UserRole.MANAGER,
-        organizationId = "org2"
+        organizationId = org2.id
     ))
     val partner1 = userUseCase.createUser(UserInput(
         username = "partner1",
         email = "partner1@example.com",
         password = "partner123",
         role = UserRole.PARTNER,
-        organizationId = "org1"
+        organizationId = org1.id
     ))
     val partner2 = userUseCase.createUser(UserInput(
         username = "partner2",
         email = "partner2@example.com",
         password = "partner123",
         role = UserRole.PARTNER,
-        organizationId = "org2"
+        organizationId = org2.id
     ))
     val partner3 = userUseCase.createUser(UserInput(
         username = "partner3",
         email = "partner3@example.com",
         password = "partner123",
         role = UserRole.PARTNER,
-        organizationId = "org3"
+        organizationId = org3.id
     ))
     val partner4 = userUseCase.createUser(UserInput(
         username = "partner4",
         email = "partner4@example.com",
         password = "partner123",
         role = UserRole.PARTNER,
-        organizationId = "org4"
+        organizationId = org4.id
     ))
     
     // Create projects using use case

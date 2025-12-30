@@ -4,6 +4,10 @@ import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import org.koin.core.context.GlobalContext
 import domain.model.contracts.DeliverableContract
 import application.usecase.interfaces.DeliverableUseCase
+import graphql.schema.DataFetchingEnvironment
+import infrastructure.graphql.context.requireUser
+import infrastructure.graphql.context.validateRoles
+import domain.model.UserRole
 
 @GraphQLDescription("Deliverable response with additional GraphQL fields")
 class DeliverableResponse(
@@ -31,14 +35,18 @@ class DeliverableResponse(
     override val assignedTo: String? get() = deliverable.assignedTo
     
     @GraphQLDescription("Get the work package this deliverable belongs to")
-    fun workPackage(): WorkPackageResponse? {
-        return deliverableUseCase.getDeliverableWorkPackage(deliverable.id)
-            ?.let { WorkPackageResponse(it) }
-    }
+    fun workPackage(dataFetchingEnvironment: DataFetchingEnvironment): WorkPackageResponse? =
+        dataFetchingEnvironment.graphQlContext.requireUser { user ->
+            deliverableUseCase.getDeliverableWorkPackage(deliverable.id)
+                ?.let { WorkPackageResponse(it) }
+        }
     
-    @GraphQLDescription("Get the user assigned to this deliverable")
-    fun assignedUser(): UserResponse? {
-        return deliverableUseCase.getDeliverableAssignedUser(deliverable.id)
-            ?.let { UserResponse(it) }
-    }
+    @GraphQLDescription("Get the user assigned to this deliverable (Admin and Manager only)")
+    fun assignedUser(dataFetchingEnvironment: DataFetchingEnvironment): UserResponse? =
+        dataFetchingEnvironment.graphQlContext.validateRoles(
+            allowedRoles = listOf(UserRole.ADMIN, UserRole.MANAGER)
+        ) { user ->
+            deliverableUseCase.getDeliverableAssignedUser(deliverable.id)
+                ?.let { UserResponse(it) }
+        }
 }

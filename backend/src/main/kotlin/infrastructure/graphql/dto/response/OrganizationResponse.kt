@@ -5,6 +5,10 @@ import org.koin.core.context.GlobalContext
 import domain.model.contracts.OrganizationContract
 import application.usecase.interfaces.OrganizationUseCase
 import infrastructure.graphql.dto.page.PaginatedUsers
+import graphql.schema.DataFetchingEnvironment
+import infrastructure.graphql.context.requireUser
+import infrastructure.graphql.context.validateRoles
+import domain.model.UserRole
 
 @GraphQLDescription("Organization response with additional GraphQL fields")
 class OrganizationResponse(
@@ -25,13 +29,16 @@ class OrganizationResponse(
     @GraphQLDescription("Country where the organization is located")
     override val country: String get() = organization.country
 
-    @GraphQLDescription("Get all users belonging to this organization")
+    @GraphQLDescription("Get all users belonging to this organization (Admin and Manager only)")
     fun users(
+        dataFetchingEnvironment: DataFetchingEnvironment,
         @GraphQLDescription("Maximum number of items to return") limit: Int = 10,
         @GraphQLDescription("Number of items to skip") offset: Int = 0
-    ): PaginatedUsers {
+    ): PaginatedUsers = dataFetchingEnvironment.graphQlContext.validateRoles(
+        allowedRoles = listOf(UserRole.ADMIN, UserRole.MANAGER)
+    ) { user ->
         val page = organizationUseCase.getOrganizationUsers(organization.id, limit, offset)
-        return PaginatedUsers(
+        PaginatedUsers(
             items =  page.items.map { UserResponse(it) },
             totalCount = page.totalCount,
             hasNextPage = page.hasNextPage

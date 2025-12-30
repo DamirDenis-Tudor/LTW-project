@@ -6,6 +6,10 @@ import domain.model.contracts.UserContract
 import domain.model.UserRole
 import application.usecase.interfaces.UserUseCase
 import infrastructure.graphql.dto.page.PaginatedProjects
+import graphql.schema.DataFetchingEnvironment
+import infrastructure.graphql.context.requireUser
+import infrastructure.graphql.context.validateRoles
+import application.exception.AuthorizationException
 
 @GraphQLDescription("User response with additional GraphQL fields")
 class UserResponse(
@@ -30,19 +34,23 @@ class UserResponse(
     override val organizationId: String? get() = user.organizationId
 
     @GraphQLDescription("Get the organization this user belongs to")
-    fun organization(): OrganizationResponse? {
-        return userUseCase.getUserOrganization(user.id)
-            ?.let { OrganizationResponse(it) }
-    }
+    fun organization(dataFetchingEnvironment: DataFetchingEnvironment): OrganizationResponse? =
+        dataFetchingEnvironment.graphQlContext.requireUser { user ->
+            userUseCase.getUserOrganization(this.user.id)
+                ?.let { OrganizationResponse(it) }
+        }
     
     @GraphQLDescription("Get projects where this user is a manager")
     fun managedProjects(
+        dataFetchingEnvironment: DataFetchingEnvironment,
         @GraphQLDescription("Maximum number of items to return") limit: Int = 10,
         @GraphQLDescription("Number of items to skip") offset: Int = 0
-    ): PaginatedProjects {
-        val page = userUseCase.getUserManagedProjects(user.id, limit, offset)
+    ): PaginatedProjects = dataFetchingEnvironment.graphQlContext.validateRoles(
+        allowedRoles = listOf(UserRole.MANAGER)
+    ) { user ->
+        val page = userUseCase.getUserManagedProjects(this.user.id, limit, offset)
         val projects = page.items.map { ProjectResponse(it) }
-        return PaginatedProjects(
+        PaginatedProjects(
             items = projects,
             totalCount = page.totalCount,
             hasNextPage = page.hasNextPage
@@ -51,12 +59,15 @@ class UserResponse(
     
     @GraphQLDescription("Get projects where this user is a partner")
     fun partnerProjects(
+        dataFetchingEnvironment: DataFetchingEnvironment,
         @GraphQLDescription("Maximum number of items to return") limit: Int = 10,
         @GraphQLDescription("Number of items to skip") offset: Int = 0
-    ): PaginatedProjects {
-        val page = userUseCase.getUserPartnerProjects(user.id, limit, offset)
+    ): PaginatedProjects = dataFetchingEnvironment.graphQlContext.validateRoles(
+        allowedRoles = listOf(UserRole.PARTNER)
+    ) { user ->
+        val page = userUseCase.getUserPartnerProjects(this.user.id, limit, offset)
         val projects = page.items.map { ProjectResponse(it) }
-        return PaginatedProjects(
+        PaginatedProjects(
             items = projects,
             totalCount = page.totalCount,
             hasNextPage = page.hasNextPage
