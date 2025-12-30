@@ -9,6 +9,8 @@ class InMemoryProjectRepository : ProjectRepository {
     override fun findAll(limit: Int, offset: Int): List<Project> =
         projects.drop(offset).take(minOf(limit, 100))
 
+    override fun count(): Int = projects.size
+
     override fun findById(id: String): Project? = projects.find { it.id == id }
 
     override fun findByManagerId(managerId: String, limit: Int, offset: Int): List<Project> =

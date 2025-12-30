@@ -4,6 +4,7 @@ import domain.model.Organization
 
 interface OrganizationRepository {
     fun findAll(limit: Int, offset: Int): List<Organization>
+    fun count(): Int
     fun findById(id: String): Organization?
     fun save(organization: Organization): Organization
 }

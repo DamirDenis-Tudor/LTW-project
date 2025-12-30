@@ -1,14 +1,15 @@
-package infrastructure.graphql.response.page
+package infrastructure.graphql.dto.page
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
-import infrastructure.graphql.response.ProjectResponse
+import application.common.Page
+import infrastructure.graphql.dto.response.ProjectResponse
 
 @GraphQLDescription("Paginated projects response")
 data class PaginatedProjects(
     @GraphQLDescription("List of projects in current page")
-    val items: List<ProjectResponse>,
+    override val items: List<ProjectResponse>,
     @GraphQLDescription("Total number of projects available")
-    val totalCount: Int,
+    override val totalCount: Int,
     @GraphQLDescription("Whether there are more projects available")
-    val hasNextPage: Boolean
-)
+    override val hasNextPage: Boolean
+) : Page<ProjectResponse>(items, totalCount, hasNextPage)

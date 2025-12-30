@@ -1,14 +1,15 @@
-package infrastructure.graphql.response.page
+package infrastructure.graphql.dto.page
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
-import infrastructure.graphql.response.UserResponse
+import application.common.Page
+import infrastructure.graphql.dto.response.UserResponse
 
 @GraphQLDescription("Paginated users response")
 data class PaginatedUsers(
     @GraphQLDescription("List of users in current page")
-    val items: List<UserResponse>,
+    override val items: List<UserResponse>,
     @GraphQLDescription("Total number of users available")
-    val totalCount: Int,
+    override val totalCount: Int,
     @GraphQLDescription("Whether there are more users available")
-    val hasNextPage: Boolean
-)
+    override val hasNextPage: Boolean
+) : Page<UserResponse>(items, totalCount, hasNextPage)

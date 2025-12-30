@@ -1,22 +1,47 @@
 package application.usecase.implementation
 
-import application.input.DeliverableInput
-import application.context.UserJwt
+import application.common.Page
+import application.input.DeliverableInputContract
+import application.common.UserJwt
 import application.usecase.interfaces.DeliverableUseCase
 import domain.model.Deliverable
+import domain.model.WorkPackage
+import domain.model.User
 import domain.model.UserRole
 import domain.repository.DeliverableRepository
 import domain.repository.ProjectRepository
 import domain.repository.WorkPackageRepository
+import domain.repository.UserRepository
 import java.util.*
 
 class DeliverableUseCaseImpl(
     private val deliverableRepository: DeliverableRepository,
     private val projectRepository: ProjectRepository,
-    private val workPackageRepository: WorkPackageRepository
+    private val workPackageRepository: WorkPackageRepository,
+    private val userRepository: UserRepository
 ) : DeliverableUseCase {
     
-    override fun createDeliverable(wpId: String, dto: DeliverableInput): Deliverable {
+    override fun getDeliverablesByWorkPackageId(workPackageId: String, limit: Int, offset: Int): Page<Deliverable> {
+        val deliverables = deliverableRepository.findByWorkPackageId(workPackageId, minOf(limit, 100), offset)
+        val totalCount = deliverableRepository.countByWorkPackageId(workPackageId)
+        return Page(
+            items = deliverables,
+            totalCount = totalCount,
+            hasNextPage = offset + limit < totalCount
+        )
+    }
+
+    override fun getDeliverableWorkPackage(deliverableId: String): WorkPackage? {
+        val deliverable = deliverableRepository.findById(deliverableId)
+        return deliverable?.let { workPackageRepository.findById(it.workPackageId) }
+    }
+
+    override fun getDeliverableAssignedUser(deliverableId: String): User? {
+        val deliverable = deliverableRepository.findById(deliverableId)
+        return deliverable?.assignedTo?.let { userRepository.findById(it).getOrNull() }
+    }
+    
+    override fun createDeliverable(wpId: String, dto: DeliverableInputContract): Deliverable {
         val deliverable = Deliverable(
             id = UUID.randomUUID().toString(),
             workPackageId = wpId,

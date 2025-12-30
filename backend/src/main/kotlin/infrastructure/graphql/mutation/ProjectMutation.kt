@@ -1,13 +1,13 @@
 package infrastructure.graphql.mutation
 
-import com.expediagroup.graphql.server.operations.Mutation
-import graphql.schema.DataFetchingEnvironment
-import org.koin.core.context.GlobalContext
-import application.input.ProjectInput
 import application.usecase.interfaces.ProjectUseCase
+import com.expediagroup.graphql.server.operations.Mutation
 import domain.model.UserRole
+import graphql.schema.DataFetchingEnvironment
 import infrastructure.graphql.context.validateRoles
-import infrastructure.graphql.response.ProjectResponse
+import infrastructure.graphql.dto.input.ProjectInput
+import infrastructure.graphql.dto.response.ProjectResponse
+import org.koin.core.context.GlobalContext
 
 class ProjectMutation : Mutation {
 

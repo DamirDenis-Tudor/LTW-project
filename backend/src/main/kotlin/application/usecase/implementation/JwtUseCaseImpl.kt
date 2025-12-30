@@ -2,7 +2,7 @@ package application.usecase.implementation
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import application.context.UserJwt
+import application.common.UserJwt
 import application.usecase.interfaces.JwtUseCase
 import domain.model.User
 import domain.model.UserRole

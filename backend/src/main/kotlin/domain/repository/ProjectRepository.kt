@@ -4,6 +4,7 @@ import domain.model.Project
 
 interface ProjectRepository {
     fun findAll(limit: Int, offset: Int): List<Project>
+    fun count(): Int
     fun findById(id: String): Project?
     fun findByManagerId(managerId: String, limit: Int, offset: Int): List<Project>
     fun findByPartnerId(partnerId: String, limit: Int, offset: Int): List<Project>

@@ -1,14 +1,15 @@
-package infrastructure.graphql.response.page
+package infrastructure.graphql.dto.page
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
-import infrastructure.graphql.response.DeliverableResponse
+import application.common.Page
+import infrastructure.graphql.dto.response.DeliverableResponse
 
 @GraphQLDescription("Paginated deliverables response")
 data class PaginatedDeliverables(
     @GraphQLDescription("List of deliverables in current page")
-    val items: List<DeliverableResponse>,
+    override val items: List<DeliverableResponse>,
     @GraphQLDescription("Total number of deliverables available")
-    val totalCount: Int,
+    override val totalCount: Int,
     @GraphQLDescription("Whether there are more deliverables available")
-    val hasNextPage: Boolean
-)
+    override val hasNextPage: Boolean
+) : Page<DeliverableResponse>(items, totalCount, hasNextPage)

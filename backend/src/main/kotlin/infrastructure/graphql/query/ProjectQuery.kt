@@ -5,7 +5,8 @@ import graphql.schema.DataFetchingEnvironment
 import org.koin.core.context.GlobalContext
 import application.usecase.interfaces.ProjectUseCase
 import infrastructure.graphql.context.requireUser
-import infrastructure.graphql.response.ProjectResponse
+import infrastructure.graphql.dto.page.PaginatedProjects
+import infrastructure.graphql.dto.response.ProjectResponse
 
 class ProjectQuery : Query {
 
@@ -15,10 +16,13 @@ class ProjectQuery : Query {
         dataFetchingEnvironment: DataFetchingEnvironment,
         limit: Int = 10,
         offset: Int = 0
-    ): List<ProjectResponse> = dataFetchingEnvironment.graphQlContext.requireUser { user ->
-        projectUseCase.getAllProjects(limit, offset, user).map { 
-            ProjectResponse(it) 
-        }
+    ): PaginatedProjects = dataFetchingEnvironment.graphQlContext.requireUser { user ->
+        val page = projectUseCase.getAllProjects(limit, offset, user)
+        PaginatedProjects(
+            items = page.items.map { ProjectResponse(it) },
+            totalCount = page.totalCount,
+            hasNextPage = page.hasNextPage
+        )
     }
 
     fun project(

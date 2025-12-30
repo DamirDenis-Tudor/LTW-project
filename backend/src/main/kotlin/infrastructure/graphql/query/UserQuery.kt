@@ -6,8 +6,8 @@ import org.koin.core.context.GlobalContext
 import application.usecase.interfaces.UserUseCase
 import domain.model.UserRole
 import infrastructure.graphql.context.validateRoles
-import infrastructure.graphql.response.page.PaginatedUsers
-import infrastructure.graphql.response.UserResponse
+import infrastructure.graphql.dto.page.PaginatedUsers
+import infrastructure.graphql.dto.response.UserResponse
 
 class UserQuery : Query {
 
@@ -18,12 +18,11 @@ class UserQuery : Query {
         limit: Int = 10,
         offset: Int = 0
     ): PaginatedUsers = dataFetchingEnvironment.graphQlContext.validateRoles(listOf(UserRole.ADMIN)) {
-        val users = userUseCase.getAllUsers(limit, offset).map { UserResponse(it) }
-        val totalCount = userUseCase.getTotalUsersCount()
+        val page = userUseCase.getAllUsers(limit, offset)
         PaginatedUsers(
-            items = users,
-            totalCount = totalCount,
-            hasNextPage = offset + limit < totalCount
+            items = page.items.map { UserResponse(it) },
+            totalCount = page.totalCount,
+            hasNextPage = page.hasNextPage
         )
     }
 

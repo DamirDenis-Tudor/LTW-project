@@ -5,7 +5,8 @@ import graphql.schema.DataFetchingEnvironment
 import org.koin.core.context.GlobalContext
 import application.usecase.interfaces.OrganizationUseCase
 import infrastructure.graphql.context.requireUser
-import infrastructure.graphql.response.OrganizationResponse
+import infrastructure.graphql.dto.page.PaginatedOrganizations
+import infrastructure.graphql.dto.response.OrganizationResponse
 
 class OrganizationQuery : Query {
 
@@ -15,9 +16,12 @@ class OrganizationQuery : Query {
         dataFetchingEnvironment: DataFetchingEnvironment,
         limit: Int = 10,
         offset: Int = 0
-    ): List<OrganizationResponse> = dataFetchingEnvironment.graphQlContext.requireUser { user ->
-        organizationUseCase.getOrganizations(limit, offset).map {
-            OrganizationResponse(it)
-        }
+    ): PaginatedOrganizations = dataFetchingEnvironment.graphQlContext.requireUser { user ->
+        val page = organizationUseCase.getOrganizations(limit, offset)
+        PaginatedOrganizations(
+            items = page.items.map { OrganizationResponse(it) },
+            totalCount = page.totalCount,
+            hasNextPage = page.hasNextPage
+        )
     }
 }

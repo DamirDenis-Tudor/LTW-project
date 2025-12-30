@@ -1,13 +1,13 @@
 package infrastructure.graphql.mutation
 
-import com.expediagroup.graphql.server.operations.Mutation
-import graphql.schema.DataFetchingEnvironment
-import org.koin.core.context.GlobalContext
-import application.input.WorkPackageInput
 import application.usecase.interfaces.WorkPackageUseCase
+import com.expediagroup.graphql.server.operations.Mutation
 import domain.model.UserRole
+import graphql.schema.DataFetchingEnvironment
 import infrastructure.graphql.context.validateRoles
-import infrastructure.graphql.response.WorkPackageResponse
+import infrastructure.graphql.dto.input.WorkPackageInput
+import infrastructure.graphql.dto.response.WorkPackageResponse
+import org.koin.core.context.GlobalContext
 
 class WorkPackageMutation : Mutation {
 

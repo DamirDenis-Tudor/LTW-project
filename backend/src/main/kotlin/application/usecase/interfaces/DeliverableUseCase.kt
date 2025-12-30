@@ -1,10 +1,16 @@
 package application.usecase.interfaces
 
-import application.input.DeliverableInput
-import application.context.UserJwt
+import application.common.Page
+import application.input.DeliverableInputContract
+import application.common.UserJwt
 import domain.model.Deliverable
+import domain.model.WorkPackage
+import domain.model.User
 
 interface DeliverableUseCase {
-    fun createDeliverable(wpId: String, dto: DeliverableInput): Deliverable
+    fun getDeliverablesByWorkPackageId(workPackageId: String, limit: Int, offset: Int): Page<Deliverable>
+    fun getDeliverableWorkPackage(deliverableId: String): WorkPackage?
+    fun getDeliverableAssignedUser(deliverableId: String): User?
+    fun createDeliverable(wpId: String, dto: DeliverableInputContract): Deliverable
     fun updateDeliverableStatus(id: String, status: Boolean, user: UserJwt): Deliverable
 }

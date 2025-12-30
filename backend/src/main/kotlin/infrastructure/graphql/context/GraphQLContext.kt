@@ -1,7 +1,7 @@
 package infrastructure.graphql.context
 
 import graphql.GraphQLContext
-import application.context.UserJwt
+import application.common.UserJwt
 import application.usecase.implementation.JwtUseCaseImpl
 import domain.model.UserRole
 

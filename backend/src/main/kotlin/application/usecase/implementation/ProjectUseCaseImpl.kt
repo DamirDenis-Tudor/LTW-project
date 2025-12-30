@@ -1,7 +1,8 @@
 package application.usecase.implementation
 
-import application.input.ProjectInput
-import application.context.UserJwt
+import application.common.Page
+import application.input.ProjectInputContract
+import application.common.UserJwt
 import application.usecase.interfaces.ProjectUseCase
 import domain.model.*
 import domain.repository.ProjectRepository
@@ -9,13 +10,22 @@ import java.util.*
 
 class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : ProjectUseCase {
     
-    override fun getAllProjects(limit: Int, offset: Int, user: UserJwt): List<Project> {
-        val projects = projectRepository.findAll(minOf(limit, 100), offset)
-        return when (user.role) {
-            UserRole.ADMIN -> projects
-            UserRole.MANAGER -> projects.filter { user.id in it.managerIds }
-            UserRole.PARTNER -> projects.filter { user.organizationId in it.partnerIds }
+    override fun getAllProjects(limit: Int, offset: Int, user: UserJwt): Page<Project> {
+        val projects = when (user.role) {
+            UserRole.ADMIN -> projectRepository.findAll(minOf(limit, 100), offset)
+            UserRole.MANAGER -> projectRepository.findByManagerId(user.id, minOf(limit, 100), offset)
+            UserRole.PARTNER -> projectRepository.findByPartnerId(user.organizationId ?: "", minOf(limit, 100), offset)
         }
+        val totalCount = when (user.role) {
+            UserRole.ADMIN -> projectRepository.count()
+            UserRole.MANAGER -> projectRepository.countByManagerId(user.id)
+            UserRole.PARTNER -> projectRepository.countByPartnerId(user.organizationId ?: "")
+        }
+        return Page(
+            items = projects,
+            totalCount = totalCount,
+            hasNextPage = offset + limit < totalCount
+        )
     }
 
     override fun getProjectById(id: String, user: UserJwt): Project? {
@@ -27,7 +37,27 @@ class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : Pro
         }
     }
 
-    override fun createProject(dto: ProjectInput, user: UserJwt): Project {
+    override fun getProjectPartners(projectId: String, limit: Int, offset: Int): Page<String> {
+        val partnerIds = projectRepository.findPartnersByProjectId(projectId, limit, offset)
+        val totalCount = projectRepository.countPartnersByProjectId(projectId)
+        return Page(
+            items = partnerIds,
+            totalCount = totalCount,
+            hasNextPage = offset + limit < totalCount
+        )
+    }
+
+    override fun getProjectManagers(projectId: String, limit: Int, offset: Int): Page<String> {
+        val managerIds = projectRepository.findManagersByProjectId(projectId, limit, offset)
+        val totalCount = projectRepository.countManagersByProjectId(projectId)
+        return Page(
+            items = managerIds,
+            totalCount = totalCount,
+            hasNextPage = offset + limit < totalCount
+        )
+    }
+
+    override fun createProject(dto: ProjectInputContract, user: UserJwt): Project {
         val project = Project(
             id = UUID.randomUUID().toString(),
             title = dto.title,

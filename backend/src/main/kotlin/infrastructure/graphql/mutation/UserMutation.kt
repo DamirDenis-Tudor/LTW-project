@@ -1,15 +1,15 @@
 package infrastructure.graphql.mutation
 
-import com.expediagroup.graphql.server.operations.Mutation
-import graphql.schema.DataFetchingEnvironment
-import org.koin.core.context.GlobalContext
-import application.input.UserInput
 import application.usecase.implementation.JwtUseCaseImpl
 import application.usecase.interfaces.UserUseCase
+import com.expediagroup.graphql.server.operations.Mutation
 import domain.model.UserRole
+import graphql.schema.DataFetchingEnvironment
 import infrastructure.graphql.context.AuthenticationException
 import infrastructure.graphql.context.validateRoles
-import infrastructure.graphql.response.UserResponse
+import infrastructure.graphql.dto.input.UserInput
+import infrastructure.graphql.dto.response.UserResponse
+import org.koin.core.context.GlobalContext
 
 class UserMutation : Mutation {
 

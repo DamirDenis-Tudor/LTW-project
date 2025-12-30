@@ -5,7 +5,7 @@ import graphql.schema.DataFetchingEnvironment
 import org.koin.core.context.GlobalContext
 import application.usecase.interfaces.WorkPackageUseCase
 import infrastructure.graphql.context.requireUser
-import infrastructure.graphql.response.WorkPackageResponse
+import infrastructure.graphql.dto.response.WorkPackageResponse
 
 class WorkPackageQuery : Query {
 

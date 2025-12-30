@@ -9,6 +9,8 @@ class InMemoryOrganizationRepository : OrganizationRepository {
     override fun findAll(limit: Int, offset: Int): List<Organization> =
         organizations.drop(offset).take(minOf(limit, 100))
 
+    override fun count(): Int = organizations.size
+
     override fun findById(id: String): Organization? = organizations.find { it.id == id }
 
     override fun save(organization: Organization): Organization {

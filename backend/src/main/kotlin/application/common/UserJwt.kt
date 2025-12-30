@@ -1,4 +1,4 @@
-package application.context
+package application.common
 
 import domain.model.UserRole
 

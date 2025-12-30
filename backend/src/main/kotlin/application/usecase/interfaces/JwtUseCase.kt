@@ -1,7 +1,7 @@
 package application.usecase.interfaces
 
 import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
-import application.context.UserJwt
+import application.common.UserJwt
 import domain.model.User
 
 @GraphQLIgnore
