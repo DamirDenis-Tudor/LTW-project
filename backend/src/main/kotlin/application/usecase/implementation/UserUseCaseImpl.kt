@@ -3,6 +3,7 @@ package application.usecase.implementation
 import application.common.Page
 import application.input.UserInputContract
 import application.usecase.interfaces.UserUseCase
+import application.exception.NotFoundException
 import domain.model.User
 import domain.model.Organization
 import domain.model.Project
@@ -58,6 +59,10 @@ class UserUseCaseImpl(
     }
 
     override fun createUser(dto: UserInputContract): User {
+        dto.organizationId?.let { orgId ->
+            organizationRepository.findById(orgId) ?: throw NotFoundException("Organization not found")
+        }
+        
         val user = User(
             id = UUID.randomUUID().toString(),
             username = dto.username,

@@ -14,6 +14,7 @@ interface ProjectRepository {
     fun findManagersByProjectId(projectId: String, limit: Int, offset: Int): List<String>
     fun countPartnersByProjectId(projectId: String): Int
     fun countManagersByProjectId(projectId: String): Int
+    fun isUserManagerOfWorkPackage(userId: String, workPackageId: String): Boolean
     fun save(project: Project): Project
     fun addWorkPackageToProject(projectId: String, workPackageId: String): Project?
     fun removeWorkPackageFromProject(projectId: String, workPackageId: String): Project?

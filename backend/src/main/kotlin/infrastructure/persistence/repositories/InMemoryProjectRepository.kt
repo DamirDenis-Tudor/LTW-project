@@ -43,6 +43,11 @@ class InMemoryProjectRepository : ProjectRepository {
     override fun countManagersByProjectId(projectId: String): Int =
         projects.find { it.id == projectId }?.managerIds?.size ?: 0
 
+    override fun isUserManagerOfWorkPackage(userId: String, workPackageId: String): Boolean =
+        projects.any { project ->
+            userId in project.managerIds && workPackageId in project.workPackageIds
+        }
+
     override fun save(project: Project): Project {
         projects.removeIf { it.id == project.id }
         projects.add(project)

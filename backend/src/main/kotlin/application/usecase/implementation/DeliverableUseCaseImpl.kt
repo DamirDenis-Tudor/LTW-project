@@ -4,6 +4,8 @@ import application.common.Page
 import application.input.DeliverableInputContract
 import application.common.UserJwt
 import application.usecase.interfaces.DeliverableUseCase
+import application.exception.NotFoundException
+import application.exception.AuthorizationException
 import domain.model.Deliverable
 import domain.model.WorkPackage
 import domain.model.User
@@ -42,6 +44,11 @@ class DeliverableUseCaseImpl(
     }
     
     override fun createDeliverable(wpId: String, dto: DeliverableInputContract): Deliverable {
+        workPackageRepository.findById(wpId) ?: throw NotFoundException("WorkPackage not found")
+        dto.assignedTo?.let { userId ->
+            userRepository.findById(userId).getOrNull() ?: throw NotFoundException("Assigned user not found")
+        }
+        
         val deliverable = Deliverable(
             id = UUID.randomUUID().toString(),
             workPackageId = wpId,
@@ -54,20 +61,15 @@ class DeliverableUseCaseImpl(
     }
 
     override fun updateDeliverableStatus(id: String, status: Boolean, user: UserJwt): Deliverable {
-        val deliverable = deliverableRepository.findById(id) ?: throw IllegalArgumentException("Deliverable not found")
+        val deliverable = deliverableRepository.findById(id) ?: throw NotFoundException("Deliverable not found")
         
         val canUpdate = when (user.role) {
             UserRole.ADMIN -> true
-            UserRole.MANAGER -> {
-                val managedProjects = projectRepository.findAll(1000, 0).filter { user.id in it.managerIds }
-                managedProjects.any { project ->
-                    project.workPackageIds.contains(deliverable.workPackageId)
-                }
-            }
+            UserRole.MANAGER -> projectRepository.isUserManagerOfWorkPackage(user.id, deliverable.workPackageId)
             UserRole.PARTNER -> deliverable.assignedTo == user.id
         }
         
-        if (!canUpdate) throw IllegalArgumentException("Not authorized to update this deliverable")
+        if (!canUpdate) throw AuthorizationException("Not authorized to update this deliverable")
         
         val updated = deliverable.copy(isSubmitted = status)
         return deliverableRepository.save(updated)

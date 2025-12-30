@@ -71,6 +71,7 @@ class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : Pro
     }
 
     override fun deleteProject(id: String): Boolean {
+        projectRepository.findById(id) ?: throw NotFoundException("Project not found")
         projectRepository.delete(id)
         return true
     }

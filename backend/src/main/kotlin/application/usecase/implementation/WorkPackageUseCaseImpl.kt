@@ -4,6 +4,7 @@ import application.common.UserJwt
 import application.input.WorkPackageInputContract
 import application.usecase.interfaces.WorkPackageUseCase
 import application.common.Page
+import application.exception.NotFoundException
 import domain.model.WorkPackage
 import domain.model.Project
 import domain.model.User
@@ -47,6 +48,9 @@ class WorkPackageUseCaseImpl(
     }
 
     override fun createWorkPackage(dto: WorkPackageInputContract, user: UserJwt): WorkPackage {
+        projectRepository.findById(dto.projectId) ?: throw NotFoundException("Project not found")
+        userRepository.findById(dto.leadPartnerId).getOrNull() ?: throw NotFoundException("Lead partner not found")
+        
         val workPackage = WorkPackage(
             id = UUID.randomUUID().toString(),
             projectId = dto.projectId,
@@ -60,10 +64,8 @@ class WorkPackageUseCaseImpl(
     }
 
     override fun deleteWorkPackage(id: String): Boolean {
-        val workPackage = workPackageRepository.findById(id)
-        if (workPackage != null) {
-            projectRepository.removeWorkPackageFromProject(workPackage.projectId, id)
-        }
+        val workPackage = workPackageRepository.findById(id) ?: throw NotFoundException("WorkPackage not found")
+        projectRepository.removeWorkPackageFromProject(workPackage.projectId, id)
         workPackageRepository.delete(id)
         return true
     }
