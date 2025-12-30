@@ -7,6 +7,7 @@ import io.ktor.server.response.*
 import org.koin.core.context.GlobalContext
 import org.koin.ktor.plugin.Koin
 import application.di.useCaseModule
+import application.exception.AlreadyExistsException
 import application.exception.AuthenticationException
 import application.exception.AuthorizationException
 import application.exception.NotFoundException
@@ -48,6 +49,9 @@ fun Application.module() {
         }
         exception<NotFoundException> { call, cause ->
             call.respond(HttpStatusCode.NotFound, cause.message ?: "Not found")
+        }
+        exception<AlreadyExistsException> { call, cause ->
+            call.respond(HttpStatusCode.Conflict, cause.message ?: "Not found")
         }
     }
     

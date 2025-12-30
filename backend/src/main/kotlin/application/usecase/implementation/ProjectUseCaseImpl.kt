@@ -8,6 +8,7 @@ import domain.model.*
 import domain.repository.ProjectRepository
 import application.exception.NotFoundException
 import application.exception.AuthorizationException
+import application.exception.AlreadyExistsException
 import java.util.*
 
 class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : ProjectUseCase {
@@ -77,17 +78,20 @@ class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : Pro
     }
 
     override fun addPartnerToProject(projectId: String, partnerId: String, user: UserJwt): Project {
-        val project = projectRepository.addPartnerToProject(projectId, partnerId)
-        return project ?: throw NotFoundException("Project not found")
+        val existingProject = projectRepository.findById(projectId) ?: throw NotFoundException("Project not found")
+        if (partnerId in existingProject.partnerIds) throw AlreadyExistsException("Partner already assigned to project")
+        return projectRepository.addPartnerToProject(projectId, partnerId)!!
     }
 
     override fun addManagerToProject(projectId: String, managerId: String, user: UserJwt): Project {
-        val project = projectRepository.addManagerToProject(projectId, managerId)
-        return project ?: throw NotFoundException("Project not found")
+        val existingProject = projectRepository.findById(projectId) ?: throw NotFoundException("Project not found")
+        if (managerId in existingProject.managerIds) throw AlreadyExistsException("Manager already assigned to project")
+        return projectRepository.addManagerToProject(projectId, managerId)!!
     }
 
     override fun addWorkPackageToProject(projectId: String, workPackageId: String, user: UserJwt): Project {
-        val project = projectRepository.addWorkPackageToProject(projectId, workPackageId)
-        return project ?: throw NotFoundException("Project not found")
+        val existingProject = projectRepository.findById(projectId) ?: throw NotFoundException("Project not found")
+        if (workPackageId in existingProject.workPackageIds) throw AlreadyExistsException("WorkPackage already assigned to project")
+        return projectRepository.addWorkPackageToProject(projectId, workPackageId)!!
     }
 }
