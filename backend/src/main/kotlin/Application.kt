@@ -17,6 +17,8 @@ import application.usecase.interfaces.*
 import infrastructure.persistence.initializeSampleData
 import infrastructure.persistence.di.persistenceModule
 
+import io.ktor.server.plugins.cors.routing.CORS
+
 fun main() {
     embeddedServer(
         factory = Netty,
@@ -27,6 +29,17 @@ fun main() {
 }
 
 fun Application.module() {
+    install(CORS) {
+        allowHost("localhost:3000", schemes = listOf("http", "https"))
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.Authorization)
+        allowMethod(HttpMethod.Options)
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Delete)
+        allowMethod(HttpMethod.Patch)
+        allowCredentials = true
+    }
+
     install(Koin) {
         modules(persistenceModule, useCaseModule, graphQLModule)
     }
