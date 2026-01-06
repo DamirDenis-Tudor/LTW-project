@@ -3,14 +3,17 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from '../features/auth/LoginPage';
 import ProtectedRoute from './ProtectedRoute';
 import AppLayout from '../components/layout/AppLayout';
+import DashboardPage from '../features/dashboard/DashboardPage';
+import ProjectListPage from '../features/projects/ProjectListPage';
+import ProjectCreatePage from '../features/projects/ProjectCreatePage';
+import ProjectDetailsPage from '../features/projects/ProjectDetailsPage';
+import WorkPackageDetailsPage from '../features/projects/WorkPackageDetailsPage';
+import WorkPackageCreatePage from '../features/projects/WorkPackageCreatePage';
+import OrganizationListPage from '../features/organizations/OrganizationListPage';
+import OrganizationCreatePage from '../features/organizations/OrganizationCreatePage';
+import UserListPage from '../features/users/UserListPage';
+import UserCreatePage from '../features/users/UserCreatePage';
 import { UserRole } from '../types';
-
-// Placeholder components for features
-const Dashboard = () => <div>Dashboard (Coming soon)</div>;
-const ProjectList = () => <div>Project List (Coming soon)</div>;
-const ProjectDetail = () => <div>Project Detail (Coming soon)</div>;
-const UserList = () => <div>User List (Coming soon)</div>;
-const OrganizationList = () => <div>Organization List (Coming soon)</div>;
 
 const AppRoutes: React.FC = () => {
     return (
@@ -25,30 +28,46 @@ const AppRoutes: React.FC = () => {
                     </ProtectedRoute>
                 }
             >
-                <Route index element={<Dashboard />} />
+                <Route index element={<DashboardPage />} />
 
                 <Route path="projects">
-                    <Route index element={<ProjectList />} />
-                    <Route path=":id" element={<ProjectDetail />} />
+                    <Route index element={<ProjectListPage />} />
+                    <Route path="new" element={
+                        <ProtectedRoute allowedRoles={[UserRole.Admin, UserRole.Manager]}>
+                            <ProjectCreatePage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path=":id" element={<ProjectDetailsPage />} />
                 </Route>
 
-                <Route
-                    path="users"
-                    element={
-                        <ProtectedRoute allowedRoles={[UserRole.Admin]}>
-                            <UserList />
-                        </ProtectedRoute>
-                    }
-                />
+                <Route path="work-packages/:id" element={<WorkPackageDetailsPage />} />
+                <Route path="projects/:projectId/work-packages/new" element={
+                    <ProtectedRoute allowedRoles={[UserRole.Admin, UserRole.Manager]}>
+                        <WorkPackageCreatePage />
+                    </ProtectedRoute>
+                } />
 
-                <Route
-                    path="organizations"
-                    element={
-                        <ProtectedRoute allowedRoles={[UserRole.Admin]}>
-                            <OrganizationList />
-                        </ProtectedRoute>
-                    }
-                />
+                <Route path="users" element={
+                    <ProtectedRoute allowedRoles={[UserRole.Admin]}>
+                        <UserListPage />
+                    </ProtectedRoute>
+                } />
+                <Route path="users/new" element={
+                    <ProtectedRoute allowedRoles={[UserRole.Admin]}>
+                        <UserCreatePage />
+                    </ProtectedRoute>
+                } />
+
+                <Route path="organizations" element={
+                    <ProtectedRoute allowedRoles={[UserRole.Admin]}>
+                        <OrganizationListPage />
+                    </ProtectedRoute>
+                } />
+                <Route path="organizations/new" element={
+                    <ProtectedRoute allowedRoles={[UserRole.Admin]}>
+                        <OrganizationCreatePage />
+                    </ProtectedRoute>
+                } />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -29,5 +29,14 @@ query GetWorkPackageWithDeliverables($id: String!, $limit: Int!, $offset: Int!) 
       totalCount
       hasNextPage
     }
+    project {
+      id
+      partners(limit: 50, offset: 0) {
+        items {
+          id
+          username
+        }
+      }
+    }
   }
 }

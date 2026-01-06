@@ -6,6 +6,7 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
+import { NotificationService } from '../utils/notificationService';
 
 const GRAPHQL_ENDPOINT = 'http://localhost:8080/graphql';
 
@@ -55,14 +56,18 @@ const errorLink = onError((errorContext) => {
                 message.includes('Authentication required') ||
                 message.includes('Invalid token')
             ) {
+                // Don't show toast for auth errors to avoid spamming on session expire, just redirect
                 localStorage.removeItem('auth_token');
                 window.location.href = '/login';
+            } else {
+                NotificationService.error(message || 'An GraphQL error occurred');
             }
         });
     }
 
     if (networkError) {
         console.error(`[Network error]: ${networkError}`);
+        NotificationService.error(`Network error: ${networkError.message}`);
     }
 });
 
