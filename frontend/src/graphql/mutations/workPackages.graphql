@@ -1,0 +1,13 @@
+# Create a new work package (ADMIN, MANAGER)
+mutation CreateWorkPackage($input: WorkPackageInput!) {
+  createWorkPackage(input: $input) {
+    id
+    title
+    wpNumber
+  }
+}
+
+# Delete a work package (ADMIN only)
+mutation RemoveWorkPackage($id: String!) {
+  removeWorkPackage(id: $id)
+}

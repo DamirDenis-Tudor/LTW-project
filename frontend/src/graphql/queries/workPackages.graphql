@@ -1,0 +1,33 @@
+# Get work package by ID
+query GetWorkPackage($id: String!) {
+  workPackage(id: $id) {
+    id
+    title
+    wpNumber
+  }
+}
+
+# Get work package with deliverables
+query GetWorkPackageWithDeliverables($id: String!, $limit: Int!, $offset: Int!) {
+  workPackage(id: $id) {
+    id
+    title
+    wpNumber
+    deliverables(limit: $limit, offset: $offset) {
+      items {
+        id
+        description
+        dueDate
+        isSubmitted
+        assignedTo
+        assignedUser {
+          id
+          username
+          email
+        }
+      }
+      totalCount
+      hasNextPage
+    }
+  }
+}

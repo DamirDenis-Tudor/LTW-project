@@ -1,0 +1,4 @@
+# Authentication Mutation
+mutation Authenticate($username: String!, $password: String!) {
+  authenticate(username: $username, password: $password)
+}

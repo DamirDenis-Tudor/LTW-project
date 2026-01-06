@@ -1,0 +1,66 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "lib": [
+            "DOM",
+            "DOM.Iterable",
+            "ES2020"
+        ],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "strictBindCallApply": true,
+        "strictPropertyInitialization": true,
+        "noImplicitThis": true,
+        "alwaysStrict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "react-jsx",
+        "baseUrl": "src",
+        "paths": {
+            "@/*": [
+                "./*"
+            ],
+            "@components/*": [
+                "components/*"
+            ],
+            "@features/*": [
+                "features/*"
+            ],
+            "@graphql/*": [
+                "graphql/*"
+            ],
+            "@hooks/*": [
+                "hooks/*"
+            ],
+            "@lib/*": [
+                "lib/*"
+            ],
+            "@routes/*": [
+                "routes/*"
+            ],
+            "@types/*": [
+                "types/*"
+            ],
+            "@utils/*": [
+                "utils/*"
+            ]
+        }
+    },
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

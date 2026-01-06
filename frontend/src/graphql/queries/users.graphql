@@ -1,0 +1,30 @@
+# Get paginated list of users (Admin only)
+query GetUsers($limit: Int!, $offset: Int!) {
+  users(limit: $limit, offset: $offset) {
+    items {
+      id
+      username
+      email
+      role
+      organizationId
+    }
+    totalCount
+    hasNextPage
+  }
+}
+
+# Get user by ID
+query GetUser($id: String!) {
+  user(id: $id) {
+    id
+    username
+    email
+    role
+    organizationId
+    organization {
+      id
+      name
+      country
+    }
+  }
+}

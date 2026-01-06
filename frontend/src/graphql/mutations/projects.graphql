@@ -1,0 +1,38 @@
+# Create a new project (ADMIN, MANAGER)
+mutation CreateProject($input: ProjectInput!) {
+  createProject(input: $input) {
+    id
+    title
+    acronym
+    status
+  }
+}
+
+# Delete a project (ADMIN only)
+mutation RemoveProject($id: String!) {
+  removeProject(id: $id)
+}
+
+# Assign a partner to a project (ADMIN, MANAGER)
+mutation AssignPartnerToProject($projectId: String!, $partnerId: String!) {
+  assignPartnerToProject(projectId: $projectId, partnerId: $partnerId) {
+    id
+    title
+  }
+}
+
+# Assign a manager to a project (ADMIN only)
+mutation AssignManagerToProject($projectId: String!, $managerId: String!) {
+  assignManagerToProject(projectId: $projectId, managerId: $managerId) {
+    id
+    title
+  }
+}
+
+# Assign a work package to a project (ADMIN, MANAGER)
+mutation AssignWorkPackageToProject($projectId: String!, $workPackageId: String!) {
+  assignWorkPackageToProject(projectId: $projectId, workPackageId: $workPackageId) {
+    id
+    title
+  }
+}

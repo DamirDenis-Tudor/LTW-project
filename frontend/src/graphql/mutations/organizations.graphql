@@ -1,0 +1,9 @@
+# Create a new organization (ADMIN only)
+mutation CreateOrganization($input: OrganizationInput!) {
+  createOrganization(input: $input) {
+    id
+    name
+    country
+    picCode
+  }
+}

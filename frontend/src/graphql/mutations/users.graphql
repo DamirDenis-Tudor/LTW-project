@@ -1,0 +1,10 @@
+# Create a new user (ADMIN only)
+mutation RegisterUser($input: UserInput!) {
+  registerUser(input: $input) {
+    id
+    username
+    email
+    role
+    organizationId
+  }
+}

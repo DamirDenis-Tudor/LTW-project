@@ -1,0 +1,18 @@
+# Create a new deliverable (ADMIN, MANAGER)
+mutation CreateDeliverable($wpId: String!, $input: DeliverableInput!) {
+  createDeliverable(wpId: $wpId, input: $input) {
+    id
+    description
+    dueDate
+    isSubmitted
+    assignedTo
+  }
+}
+
+# Submit/unsubmit a deliverable
+mutation SubmitDeliverable($id: String!, $status: Boolean!) {
+  submitDeliverable(id: $id, status: $status) {
+    id
+    isSubmitted
+  }
+}

@@ -1,0 +1,89 @@
+# Get paginated list of projects
+query GetProjects($limit: Int!, $offset: Int!) {
+  projects(limit: $limit, offset: $offset) {
+    items {
+      id
+      title
+      acronym
+      status
+    }
+    totalCount
+    hasNextPage
+  }
+}
+
+# Get single project by ID
+query GetProject($id: String!) {
+  project(id: $id) {
+    id
+    title
+    acronym
+    status
+  }
+}
+
+# Get project with managers
+query GetProjectWithManagers($id: String!, $managersLimit: Int!, $managersOffset: Int!) {
+  project(id: $id) {
+    id
+    title
+    acronym
+    status
+    managers(limit: $managersLimit, offset: $managersOffset) {
+      items {
+        id
+        username
+        email
+      }
+      totalCount
+      hasNextPage
+    }
+  }
+}
+
+# Get project with partners
+query GetProjectWithPartners($id: String!, $partnersLimit: Int!, $partnersOffset: Int!) {
+  project(id: $id) {
+    id
+    title
+    acronym
+    status
+    partners(limit: $partnersLimit, offset: $partnersOffset) {
+      items {
+        id
+        username
+        email
+        organization {
+          id
+          name
+          country
+        }
+      }
+      totalCount
+      hasNextPage
+    }
+  }
+}
+
+# Get project with work packages
+query GetProjectWithWorkPackages($id: String!, $wpLimit: Int!, $wpOffset: Int!) {
+  project(id: $id) {
+    id
+    title
+    acronym
+    status
+    workPackages(limit: $wpLimit, offset: $wpOffset) {
+      items {
+        id
+        wpNumber
+        title
+        leadPartner {
+          id
+          username
+        }
+      }
+      totalCount
+      hasNextPage
+    }
+  }
+}
