@@ -15,7 +15,7 @@ const httpLink = createHttpLink({
 });
 
 // Auth Link - injects JWT token into headers
-const authLink = setContext((_, { headers }) => {
+const authLink = setContext((_, { headers }: any) => {
     const token = localStorage.getItem('auth_token');
     return {
         headers: {

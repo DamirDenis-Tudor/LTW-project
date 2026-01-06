@@ -1,8 +1,8 @@
 // User roles matching backend UserRole enum
 export enum UserRole {
-    ADMIN = 'ADMIN',
-    MANAGER = 'MANAGER',
-    PARTNER = 'PARTNER',
+    Admin = 'ADMIN',
+    Manager = 'MANAGER',
+    Partner = 'PARTNER',
 }
 
 // Project status matching backend ProjectStatus enum
