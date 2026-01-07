@@ -21,10 +21,10 @@ class WorkPackageResponse(
 
     @GraphQLDescription("Unique identifier for the work package")
     override val id: String get() = workPackage.id
-    
+
     @GraphQLDescription("Work package number")
     override val wpNumber: Int get() = workPackage.wpNumber
-    
+
     @GraphQLDescription("Title of the work package")
     override val title: String get() = workPackage.title
 
@@ -37,7 +37,7 @@ class WorkPackageResponse(
     ): PaginatedDeliverables = dataFetchingEnvironment.graphQlContext.validateRoles(
         allowedRoles = listOf(UserRole.ADMIN, UserRole.MANAGER, UserRole.PARTNER)
     ) { user ->
-        val page = deliverableUseCase.getDeliverablesByWorkPackageId(workPackage.id, limit, offset, isSubmitted, user)
+        val page = deliverableUseCase.getDeliverablesByWorkPackageId(workPackage.id, limit, offset, isSubmitted)
         val deliverables = page.items.map { DeliverableResponse(it) }
         PaginatedDeliverables(
             items = deliverables,
@@ -45,14 +45,14 @@ class WorkPackageResponse(
             hasNextPage = page.hasNextPage
         )
     }
-    
+
     @GraphQLDescription("Get the project this work package belongs to")
     fun project(dataFetchingEnvironment: DataFetchingEnvironment): ProjectResponse? =
         dataFetchingEnvironment.graphQlContext.requireUser { user ->
             workPackageUseCase.getWorkPackageProject(workPackage.id)
                 ?.let { ProjectResponse(it) }
         }
-    
+
     @GraphQLDescription("Get the lead partner user for this work package")
     fun leadPartner(dataFetchingEnvironment: DataFetchingEnvironment): UserResponse? =
         dataFetchingEnvironment.graphQlContext.requireUser { user ->

@@ -8,7 +8,7 @@ import domain.model.WorkPackage
 import domain.model.User
 
 interface DeliverableUseCase {
-    fun getDeliverablesByWorkPackageId(workPackageId: String, limit: Int, offset: Int, status: Boolean? = null, user: UserJwt): Page<Deliverable>
+    fun getDeliverablesByWorkPackageId(workPackageId: String, limit: Int, offset: Int, status: Boolean? = null): Page<Deliverable>
     fun getDeliverableWorkPackage(deliverableId: String): WorkPackage?
     fun getDeliverableAssignedUser(deliverableId: String): User?
     fun createDeliverable(wpId: String, dto: DeliverableInputContract): Deliverable

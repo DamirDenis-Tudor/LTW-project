@@ -27,20 +27,10 @@ class DeliverableUseCaseImpl(
         workPackageId: String,
         limit: Int,
         offset: Int,
-        status: Boolean?,
-        user: UserJwt
+        status: Boolean?
     ): Page<Deliverable> {
-        val deliverables = if (status != null) {
-            deliverableRepository.findByWorkPackageIdAndStatus(workPackageId, status, minOf(limit, 100), offset)
-        } else {
-            deliverableRepository.findByWorkPackageId(workPackageId, minOf(limit, 100), offset)
-        }
-
-        val totalCount = if (status != null) {
-            deliverableRepository.countByWorkPackageIdAndStatus(workPackageId, status)
-        } else {
-            deliverableRepository.countByWorkPackageId(workPackageId)
-        }
+        val deliverables = deliverableRepository.findByWorkPackageId(workPackageId, status, limit, offset)
+        val totalCount = deliverableRepository.countByWorkPackageId(workPackageId, status)
 
         return Page(
             items = deliverables,
