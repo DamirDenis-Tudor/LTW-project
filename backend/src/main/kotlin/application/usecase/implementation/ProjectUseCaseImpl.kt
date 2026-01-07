@@ -61,12 +61,15 @@ class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : Pro
     }
 
     override fun createProject(dto: ProjectInputContract, user: UserJwt): Project {
+        var managerIds = ArrayList<String>()
+        if (user.role == UserRole.MANAGER) managerIds.add(user.id)
         val project = Project(
             id = UUID.randomUUID().toString(),
             title = dto.title,
             acronym = dto.acronym,
             status = dto.status,
-            workPackageIds = emptyList()
+            workPackageIds = emptyList(),
+            managerIds = managerIds
         )
         return projectRepository.save(project)
     }

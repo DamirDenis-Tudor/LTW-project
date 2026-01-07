@@ -8,6 +8,7 @@ mutation CreateProject($input: ProjectInput!) {
   }
 }
 
+
 # Delete a project (ADMIN only)
 mutation RemoveProject($id: String!) {
   removeProject(id: $id)

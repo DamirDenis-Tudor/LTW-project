@@ -19,14 +19,12 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { CreateWorkPackageDocument, GetProjectWithPartnersDocument } from '../../gql/graphql';
 
-// 1. Define schema with coercion
 const wpSchema = z.object({
     title: z.string().min(3, 'Title is required'),
     wpNumber: z.coerce.number().min(1, 'WP Number must be positive'),
     leadPartnerId: z.string().min(1, 'Lead Partner is required'),
 });
 
-// 2. Define inferred type
 type WPFormValues = z.infer<typeof wpSchema>;
 
 const WorkPackageCreatePage: React.FC = () => {

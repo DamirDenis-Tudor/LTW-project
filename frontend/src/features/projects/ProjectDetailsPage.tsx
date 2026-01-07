@@ -26,6 +26,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import { GetProjectDocument, ProjectStatus, UserRole } from '../../gql/graphql';
 import { useAuth } from '../auth/AuthContext';
 import ProjectWorkPackageList from './components/ProjectWorkPackageList';
+import ProjectTeamList from './components/ProjectTeamList';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -139,6 +140,8 @@ const ProjectDetailsPage: React.FC = () => {
                                 variant="contained"
                                 color="secondary"
                                 startIcon={<EditIcon />}
+                                disabled
+                                title="Editing projects is not currently supported by the backend."
                             >
                                 Edit Project
                             </Button>
@@ -178,7 +181,7 @@ const ProjectDetailsPage: React.FC = () => {
                 </CustomTabPanel>
 
                 <CustomTabPanel value={value} index={2}>
-                    <Typography color="text.secondary">Team management coming soon (Part 2)</Typography>
+                    <ProjectTeamList projectId={id!} />
                 </CustomTabPanel>
             </Paper>
         </Container>

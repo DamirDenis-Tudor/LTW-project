@@ -87,3 +87,28 @@ query GetProjectWithWorkPackages($id: String!, $wpLimit: Int!, $wpOffset: Int!) 
     }
   }
 }
+
+# Get project team (managers and partners)
+query GetProjectTeam($id: String!) {
+  project(id: $id) {
+    id
+    managers(limit: 50, offset: 0) {
+      items {
+        id
+        username
+        email
+      }
+    }
+    partners(limit: 50, offset: 0) {
+      items {
+        id
+        username
+        email
+        organization {
+          id
+          name
+        }
+      }
+    }
+  }
+}

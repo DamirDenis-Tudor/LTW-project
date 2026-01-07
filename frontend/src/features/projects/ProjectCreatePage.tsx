@@ -6,14 +6,14 @@ import { useMutation } from '@apollo/client/react';
 import {
     Box,
     Container,
-    Grid,
     Paper,
     Typography,
     TextField,
     Button,
     MenuItem,
     Alert,
-    CircularProgress
+    CircularProgress,
+    Grid
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { CreateProjectDocument, ProjectStatus } from '../../gql/graphql';

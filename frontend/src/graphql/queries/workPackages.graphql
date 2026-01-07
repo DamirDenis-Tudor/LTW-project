@@ -31,6 +31,7 @@ query GetWorkPackageWithDeliverables($id: String!, $limit: Int!, $offset: Int!) 
     }
     project {
       id
+      title
       partners(limit: 50, offset: 0) {
         items {
           id
@@ -40,3 +41,4 @@ query GetWorkPackageWithDeliverables($id: String!, $limit: Int!, $offset: Int!) 
     }
   }
 }
+
