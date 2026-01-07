@@ -3,20 +3,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
-    java
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
-    }
 }
 
 group = "ro.ltw"
 version = "0.0.1"
 
 application {
-    mainClass = "ApplicationKt"
+    mainClass = "io.ktor.server.netty.EngineMain"
 }
 
 dependencies {
