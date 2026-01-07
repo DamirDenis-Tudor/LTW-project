@@ -71,14 +71,32 @@ The GraphQL playground will be available at `http://localhost:8080/graphql`
 
 ## Frontend
 
-*Frontend implementation is planned for future development.*
+The frontend is a modern React application built with TypeScript and Material UI, fully integrated with the GraphQL backend.
 
-### Planned Features
-- React/Vue.js application
-- GraphQL client integration
-- Role-based UI components
-- Project management dashboard
-- Real-time updates
+### Technology Stack
+- **React 19**
+- **TypeScript**
+- **Apollo Client** for state management and GraphQL communication
+- **Material UI (MUI)** for the design system
+- **React Hook Form** & **Zod** for form validation
+- **GraphQL Codegen** for type-safe API interactions
+
+### Key Features
+- **Modern Dashboard**: High-quality UI with glassmorphism and smooth transitions
+- **Project Management**: Full CRUD operations for projects
+- **Work Package & Deliverable Tracking**: Interactive lists with status filtering and real-time updates
+- **Role-Based UI**: Conditional rendering of features based on user roles (Admin, Manager, Partner)
+- **Pagination & Caching**: Efficient data loading using Apollo Client merge policies
+- **Responsive Design**: Fully responsive layout using MUI Grid v2
+
+### Running the Frontend
+
+```bash
+cd frontend
+npm install
+npm run codegen
+npm start
+```
 
 ## Documentation
 
