@@ -32,9 +32,10 @@ interface DeliverableCreateDialogProps {
     onClose: () => void;
     workPackageId: string;
     partners: any[];
+    onCreated?: () => void;
 }
 
-const DeliverableCreateDialog: React.FC<DeliverableCreateDialogProps> = ({ open, onClose, workPackageId, partners }) => {
+const DeliverableCreateDialog: React.FC<DeliverableCreateDialogProps> = ({ open, onClose, workPackageId, partners, onCreated }) => {
     const { user } = useAuth();
 
 
@@ -55,14 +56,9 @@ const DeliverableCreateDialog: React.FC<DeliverableCreateDialogProps> = ({ open,
     const [createDeliverable, { loading }] = useMutation(CreateDeliverableDocument, {
         onCompleted: () => {
             reset();
+            onCreated?.();
             onClose();
-        },
-        refetchQueries: [
-            {
-                query: GetWorkPackageWithDeliverablesDocument,
-                variables: { id: workPackageId, limit: 10, offset: 0 }
-            }
-        ]
+        }
     });
 
     const onSubmit = (data: DeliverableFormValues) => {

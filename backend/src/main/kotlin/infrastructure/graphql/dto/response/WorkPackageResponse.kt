@@ -32,11 +32,12 @@ class WorkPackageResponse(
     fun deliverables(
         dataFetchingEnvironment: DataFetchingEnvironment,
         @GraphQLDescription("Maximum number of items to return") limit: Int = 10,
-        @GraphQLDescription("Number of items to skip") offset: Int = 0
+        @GraphQLDescription("Number of items to skip") offset: Int = 0,
+        @GraphQLDescription("Filter by submission status") isSubmitted: Boolean? = null
     ): PaginatedDeliverables = dataFetchingEnvironment.graphQlContext.validateRoles(
         allowedRoles = listOf(UserRole.ADMIN, UserRole.MANAGER, UserRole.PARTNER)
     ) { user ->
-        val page = deliverableUseCase.getDeliverablesByWorkPackageId(workPackage.id, limit, offset)
+        val page = deliverableUseCase.getDeliverablesByWorkPackageId(workPackage.id, limit, offset, isSubmitted, user)
         val deliverables = page.items.map { DeliverableResponse(it) }
         PaginatedDeliverables(
             items = deliverables,

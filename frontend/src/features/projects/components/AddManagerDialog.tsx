@@ -9,7 +9,6 @@ import {
     TextField,
     MenuItem,
     CircularProgress,
-    Alert,
     Box
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
@@ -22,6 +21,7 @@ interface AddManagerDialogProps {
     open: boolean;
     onClose: () => void;
     projectId: string;
+    existingIds: string[];
     onAdded: () => void;
 }
 
@@ -31,7 +31,7 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-const AddManagerDialog: React.FC<AddManagerDialogProps> = ({ open, onClose, projectId, onAdded }) => {
+const AddManagerDialog: React.FC<AddManagerDialogProps> = ({ open, onClose, projectId, existingIds, onAdded }) => {
     const notification = useNotification();
     const { control, handleSubmit, reset } = useForm<FormValues>({
         resolver: zodResolver(schema),
@@ -67,9 +67,9 @@ const AddManagerDialog: React.FC<AddManagerDialogProps> = ({ open, onClose, proj
         });
     };
 
-    // Filter users to show only Managers (or Admins?)
-    // Assuming we want to assign users with Manager role to be project managers.
-    const potentialManagers = usersData?.users?.items?.filter(u => u.role === UserRole.Manager || u.role === UserRole.Admin) || [];
+    const potentialManagers = usersData?.users?.items?.filter(u =>
+        (u.role === UserRole.Manager || u.role === UserRole.Admin) && !existingIds.includes(u.id)
+    ) || [];
 
     return (
         <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>

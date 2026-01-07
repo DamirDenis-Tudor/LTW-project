@@ -44,7 +44,7 @@ class DeliverableResponse(
     @GraphQLDescription("Get the user assigned to this deliverable (Admin and Manager only)")
     fun assignedUser(dataFetchingEnvironment: DataFetchingEnvironment): UserResponse? =
         dataFetchingEnvironment.graphQlContext.validateRoles(
-            allowedRoles = listOf(UserRole.ADMIN, UserRole.MANAGER)
+            allowedRoles = listOf(UserRole.ADMIN, UserRole.MANAGER, UserRole.PARTNER)
         ) { user ->
             deliverableUseCase.getDeliverableAssignedUser(deliverable.id)
                 ?.let { UserResponse(it) }

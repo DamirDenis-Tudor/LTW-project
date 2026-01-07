@@ -22,10 +22,26 @@ class DeliverableUseCaseImpl(
     private val workPackageRepository: WorkPackageRepository,
     private val userRepository: UserRepository
 ) : DeliverableUseCase {
-    
-    override fun getDeliverablesByWorkPackageId(workPackageId: String, limit: Int, offset: Int): Page<Deliverable> {
-        val deliverables = deliverableRepository.findByWorkPackageId(workPackageId, minOf(limit, 100), offset)
-        val totalCount = deliverableRepository.countByWorkPackageId(workPackageId)
+
+    override fun getDeliverablesByWorkPackageId(
+        workPackageId: String,
+        limit: Int,
+        offset: Int,
+        status: Boolean?,
+        user: UserJwt
+    ): Page<Deliverable> {
+        val deliverables = if (status != null) {
+            deliverableRepository.findByWorkPackageIdAndStatus(workPackageId, status, minOf(limit, 100), offset)
+        } else {
+            deliverableRepository.findByWorkPackageId(workPackageId, minOf(limit, 100), offset)
+        }
+
+        val totalCount = if (status != null) {
+            deliverableRepository.countByWorkPackageIdAndStatus(workPackageId, status)
+        } else {
+            deliverableRepository.countByWorkPackageId(workPackageId)
+        }
+
         return Page(
             items = deliverables,
             totalCount = totalCount,
@@ -42,13 +58,13 @@ class DeliverableUseCaseImpl(
         val deliverable = deliverableRepository.findById(deliverableId)
         return deliverable?.assignedTo?.let { userRepository.findById(it).getOrNull() }
     }
-    
+
     override fun createDeliverable(wpId: String, dto: DeliverableInputContract): Deliverable {
         workPackageRepository.findById(wpId) ?: throw NotFoundException("WorkPackage not found")
         dto.assignedTo?.let { userId ->
             userRepository.findById(userId).getOrNull() ?: throw NotFoundException("Assigned user not found")
         }
-        
+
         val deliverable = Deliverable(
             id = UUID.randomUUID().toString(),
             workPackageId = wpId,
@@ -62,15 +78,15 @@ class DeliverableUseCaseImpl(
 
     override fun updateDeliverableStatus(id: String, status: Boolean, user: UserJwt): Deliverable {
         val deliverable = deliverableRepository.findById(id) ?: throw NotFoundException("Deliverable not found")
-        
+
         val canUpdate = when (user.role) {
             UserRole.ADMIN -> true
             UserRole.MANAGER -> projectRepository.isUserManagerOfWorkPackage(user.id, deliverable.workPackageId)
             UserRole.PARTNER -> deliverable.assignedTo == user.id
         }
-        
+
         if (!canUpdate) throw AuthorizationException("Not authorized to update this deliverable")
-        
+
         val updated = deliverable.copy(isSubmitted = status)
         return deliverableRepository.save(updated)
     }

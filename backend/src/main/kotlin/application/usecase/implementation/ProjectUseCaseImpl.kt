@@ -12,17 +12,17 @@ import application.exception.AlreadyExistsException
 import java.util.*
 
 class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : ProjectUseCase {
-    
+
     override fun getAllProjects(limit: Int, offset: Int, user: UserJwt): Page<Project> {
         val projects = when (user.role) {
             UserRole.ADMIN -> projectRepository.findAll(minOf(limit, 100), offset)
             UserRole.MANAGER -> projectRepository.findByManagerId(user.id, minOf(limit, 100), offset)
-            UserRole.PARTNER -> projectRepository.findByPartnerId(user.organizationId ?: "", minOf(limit, 100), offset)
+            UserRole.PARTNER -> projectRepository.findByPartnerId(user.id, minOf(limit, 100), offset)
         }
         val totalCount = when (user.role) {
             UserRole.ADMIN -> projectRepository.count()
             UserRole.MANAGER -> projectRepository.countByManagerId(user.id)
-            UserRole.PARTNER -> projectRepository.countByPartnerId(user.organizationId ?: "")
+            UserRole.PARTNER -> projectRepository.countByPartnerId(user.id)
         }
         return Page(
             items = projects,
@@ -36,7 +36,7 @@ class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : Pro
         return when (user.role) {
             UserRole.ADMIN -> project
             UserRole.MANAGER -> if (user.id in project.managerIds) project else throw AuthorizationException("Access denied")
-            UserRole.PARTNER -> if (user.organizationId in project.partnerIds) project else throw AuthorizationException("Access denied")
+            UserRole.PARTNER -> if (user.id in project.partnerIds) project else throw AuthorizationException("Access denied")
         }
     }
 
@@ -80,6 +80,16 @@ class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : Pro
         return true
     }
 
+    override fun updateProject(id: String, dto: ProjectInputContract): Project {
+        val project = projectRepository.findById(id) ?: throw NotFoundException("Project not found")
+        val updatedProject = project.copy(
+            title = dto.title,
+            acronym = dto.acronym,
+            status = dto.status
+        )
+        return projectRepository.save(updatedProject)
+    }
+
     override fun addPartnerToProject(projectId: String, partnerId: String, user: UserJwt): Project {
         val existingProject = projectRepository.findById(projectId) ?: throw NotFoundException("Project not found")
         if (partnerId in existingProject.partnerIds) throw AlreadyExistsException("Partner already assigned to project")
@@ -96,5 +106,15 @@ class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : Pro
         val existingProject = projectRepository.findById(projectId) ?: throw NotFoundException("Project not found")
         if (workPackageId in existingProject.workPackageIds) throw AlreadyExistsException("WorkPackage already assigned to project")
         return projectRepository.addWorkPackageToProject(projectId, workPackageId)!!
+    }
+
+    override fun removePartnerFromProject(projectId: String, partnerId: String, user: UserJwt): Project {
+        projectRepository.findById(projectId) ?: throw NotFoundException("Project not found")
+        return projectRepository.removePartnerFromProject(projectId, partnerId) ?: throw NotFoundException("Partner not found in project")
+    }
+
+    override fun removeManagerFromProject(projectId: String, managerId: String, user: UserJwt): Project {
+        projectRepository.findById(projectId) ?: throw NotFoundException("Project not found")
+        return projectRepository.removeManagerFromProject(projectId, managerId) ?: throw NotFoundException("Manager not found in project")
     }
 }

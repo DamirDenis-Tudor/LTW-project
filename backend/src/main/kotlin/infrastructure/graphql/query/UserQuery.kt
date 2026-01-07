@@ -19,7 +19,7 @@ class UserQuery : Query {
         dataFetchingEnvironment: DataFetchingEnvironment,
         @GraphQLDescription("Maximum number of users to return") limit: Int = 10,
         @GraphQLDescription("Number of users to skip for pagination") offset: Int = 0
-    ): PaginatedUsers = dataFetchingEnvironment.graphQlContext.validateRoles(listOf(UserRole.ADMIN)) {
+    ): PaginatedUsers = dataFetchingEnvironment.graphQlContext.validateRoles(listOf(UserRole.ADMIN, UserRole.MANAGER)) {
         val page = userUseCase.getAllUsers(limit, offset)
         PaginatedUsers(
             items = page.items.map { UserResponse(it) },

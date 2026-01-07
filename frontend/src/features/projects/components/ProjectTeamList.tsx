@@ -18,11 +18,20 @@ import {
 import PersonIcon from '@mui/icons-material/Person';
 import BusinessIcon from '@mui/icons-material/Business';
 import AddIcon from '@mui/icons-material/Add';
-import { GetProjectTeamDocument, UserRole } from '../../../gql/graphql';
+import DeleteIcon from '@mui/icons-material/Delete';
+import {
+    GetProjectTeamDocument,
+    UserRole,
+    RemovePartnerFromProjectDocument,
+    RemoveManagerFromProjectDocument
+} from '../../../gql/graphql';
 import TableSkeleton from '../../../components/common/TableSkeleton';
 import { useAuth } from '../../auth/AuthContext';
 import AddManagerDialog from './AddManagerDialog';
 import AddPartnerDialog from './AddPartnerDialog';
+import useNotification from '../../../hooks/useNotification';
+import { useMutation } from '@apollo/client/react';
+import IconButton from '@mui/material/IconButton';
 
 interface ProjectTeamListProps {
     projectId: string;
@@ -30,13 +39,42 @@ interface ProjectTeamListProps {
 
 const ProjectTeamList: React.FC<ProjectTeamListProps> = ({ projectId }) => {
     const { user } = useAuth();
+    const notification = useNotification();
     const { data, loading, error, refetch } = useQuery(GetProjectTeamDocument, {
         variables: { id: projectId },
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'cache-and-network',
     });
 
     const [openAddManager, setOpenAddManager] = useState(false);
     const [openAddPartner, setOpenAddPartner] = useState(false);
+
+    const [removePartner] = useMutation(RemovePartnerFromProjectDocument, {
+        onCompleted: () => {
+            notification.showSuccess('Partner removed');
+            refetch();
+        },
+        onError: (err) => notification.showError(err.message)
+    });
+
+    const [removeManager] = useMutation(RemoveManagerFromProjectDocument, {
+        onCompleted: () => {
+            notification.showSuccess('Manager removed');
+            refetch();
+        },
+        onError: (err) => notification.showError(err.message)
+    });
+
+    const handleRemovePartner = (partnerId: string) => {
+        if (window.confirm('Are you sure you want to remove this partner?')) {
+            removePartner({ variables: { projectId, partnerId } });
+        }
+    };
+
+    const handleRemoveManager = (managerId: string) => {
+        if (window.confirm('Are you sure you want to remove this manager?')) {
+            removeManager({ variables: { projectId, managerId } });
+        }
+    };
 
     if (loading) {
         return (
@@ -99,7 +137,18 @@ const ProjectTeamList: React.FC<ProjectTeamListProps> = ({ projectId }) => {
                                                 primary={manager.username}
                                                 secondary={manager.email}
                                             />
-                                            <Chip label="Manager" size="small" color="primary" variant="outlined" />
+                                            <Chip label="Manager" size="small" color="primary" variant="outlined" sx={{ mr: 1 }} />
+                                            {user?.role === UserRole.Admin && (
+                                                <IconButton
+                                                    edge="end"
+                                                    aria-label="delete"
+                                                    size="small"
+                                                    onClick={() => handleRemoveManager(manager.id)}
+                                                    color="error"
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            )}
                                         </ListItem>
                                     ))}
                                 </List>
@@ -143,7 +192,18 @@ const ProjectTeamList: React.FC<ProjectTeamListProps> = ({ projectId }) => {
                                                 secondary={partner.organization?.name ? `Rep: ${partner.username}` : partner.email}
                                             />
                                             {partner.organization && (
-                                                <Chip label={partner.organization.name} size="small" color="secondary" variant="outlined" />
+                                                <Chip label={partner.organization.name} size="small" color="secondary" variant="outlined" sx={{ mr: 1 }} />
+                                            )}
+                                            {canEdit && (
+                                                <IconButton
+                                                    edge="end"
+                                                    aria-label="delete"
+                                                    size="small"
+                                                    onClick={() => handleRemovePartner(partner.id)}
+                                                    color="error"
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
                                             )}
                                         </ListItem>
                                     ))}
@@ -159,12 +219,14 @@ const ProjectTeamList: React.FC<ProjectTeamListProps> = ({ projectId }) => {
                 open={openAddManager}
                 onClose={() => setOpenAddManager(false)}
                 projectId={projectId}
+                existingIds={managers.map((m: any) => m.id)}
                 onAdded={() => refetch()}
             />
             <AddPartnerDialog
                 open={openAddPartner}
                 onClose={() => setOpenAddPartner(false)}
                 projectId={projectId}
+                existingIds={partners.map((p: any) => p.id)}
                 onAdded={() => refetch()}
             />
         </Box>

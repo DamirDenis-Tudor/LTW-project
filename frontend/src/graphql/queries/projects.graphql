@@ -56,7 +56,6 @@ query GetProjectWithPartners($id: String!, $partnersLimit: Int!, $partnersOffset
         organization {
           id
           name
-          country
         }
       }
       totalCount

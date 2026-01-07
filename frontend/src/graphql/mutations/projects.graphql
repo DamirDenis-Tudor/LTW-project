@@ -9,6 +9,16 @@ mutation CreateProject($input: ProjectInput!) {
 }
 
 
+# Update a project (ADMIN, MANAGER)
+mutation UpdateProject($id: String!, $input: ProjectInput!) {
+  updateProject(id: $id, input: $input) {
+    id
+    title
+    acronym
+    status
+  }
+}
+
 # Delete a project (ADMIN only)
 mutation RemoveProject($id: String!) {
   removeProject(id: $id)
@@ -35,5 +45,19 @@ mutation AssignWorkPackageToProject($projectId: String!, $workPackageId: String!
   assignWorkPackageToProject(projectId: $projectId, workPackageId: $workPackageId) {
     id
     title
+  }
+}
+
+# Remove a partner from a project (ADMIN, MANAGER)
+mutation RemovePartnerFromProject($projectId: String!, $partnerId: String!) {
+  removePartnerFromProject(projectId: $projectId, partnerId: $partnerId) {
+    id
+  }
+}
+
+# Remove a manager from a project (ADMIN only)
+mutation RemoveManagerFromProject($projectId: String!, $managerId: String!) {
+  removeManagerFromProject(projectId: $projectId, managerId: $managerId) {
+    id
   }
 }

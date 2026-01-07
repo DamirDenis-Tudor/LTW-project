@@ -8,12 +8,12 @@ query GetWorkPackage($id: String!) {
 }
 
 # Get work package with deliverables
-query GetWorkPackageWithDeliverables($id: String!, $limit: Int!, $offset: Int!) {
+query GetWorkPackageWithDeliverables($id: String!, $limit: Int!, $offset: Int!, $isSubmitted: Boolean) {
   workPackage(id: $id) {
     id
     title
     wpNumber
-    deliverables(limit: $limit, offset: $offset) {
+    deliverables(limit: $limit, offset: $offset, isSubmitted: $isSubmitted) {
       items {
         id
         description

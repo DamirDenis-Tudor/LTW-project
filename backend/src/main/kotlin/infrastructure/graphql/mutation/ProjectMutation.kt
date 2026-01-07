@@ -35,6 +35,18 @@ class ProjectMutation : Mutation {
         projectUseCase.deleteProject(id)
     }
 
+    @GraphQLDescription("Update an existing project (Admin and Manager only)")
+    fun updateProject(
+        dataFetchingEnvironment: DataFetchingEnvironment,
+        @GraphQLDescription("ID of the project to update") id: String,
+        @GraphQLDescription("Updated project data") input: ProjectInput
+    ): ProjectResponse = dataFetchingEnvironment.graphQlContext.validateRoles(
+        allowedRoles = listOf(UserRole.ADMIN, UserRole.MANAGER)
+    ) { user ->
+        val project = projectUseCase.updateProject(id, input)
+        ProjectResponse(project)
+    }
+
     @GraphQLDescription("Assign a partner to a project (Admin and Manager only)")
     fun assignPartnerToProject(
         dataFetchingEnvironment: DataFetchingEnvironment,
@@ -68,6 +80,30 @@ class ProjectMutation : Mutation {
         allowedRoles = listOf(UserRole.ADMIN)
     ) { user ->
         val project = projectUseCase.addManagerToProject(projectId, managerId, user)
+        ProjectResponse(project)
+    }
+
+    @GraphQLDescription("Remove a partner from a project (Admin and Manager only)")
+    fun removePartnerFromProject(
+        dataFetchingEnvironment: DataFetchingEnvironment,
+        @GraphQLDescription("ID of the project") projectId: String,
+        @GraphQLDescription("ID of the partner to remove") partnerId: String
+    ): ProjectResponse = dataFetchingEnvironment.graphQlContext.validateRoles(
+        allowedRoles = listOf(UserRole.ADMIN, UserRole.MANAGER)
+    ) { user ->
+        val project = projectUseCase.removePartnerFromProject(projectId, partnerId, user)
+        ProjectResponse(project)
+    }
+
+    @GraphQLDescription("Remove a manager from a project (Admin only)")
+    fun removeManagerFromProject(
+        dataFetchingEnvironment: DataFetchingEnvironment,
+        @GraphQLDescription("ID of the project") projectId: String,
+        @GraphQLDescription("ID of the manager to remove") managerId: String
+    ): ProjectResponse = dataFetchingEnvironment.graphQlContext.validateRoles(
+        allowedRoles = listOf(UserRole.ADMIN)
+    ) { user ->
+        val project = projectUseCase.removeManagerFromProject(projectId, managerId, user)
         ProjectResponse(project)
     }
 }

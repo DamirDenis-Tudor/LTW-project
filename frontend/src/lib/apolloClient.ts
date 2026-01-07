@@ -108,15 +108,15 @@ const cache = new InMemoryCache({
         Query: {
             fields: {
                 projects: {
-                    keyArgs: false,
+                    keyArgs: ["limit", "offset"],
                     merge: paginationMerge,
                 },
                 users: {
-                    keyArgs: false,
+                    keyArgs: ["limit", "offset"],
                     merge: paginationMerge,
                 },
                 organizations: {
-                    keyArgs: false,
+                    keyArgs: ["limit", "offset"],
                     merge: paginationMerge,
                 },
             },
@@ -124,15 +124,15 @@ const cache = new InMemoryCache({
         ProjectResponse: {
             fields: {
                 workPackages: {
-                    keyArgs: false,
+                    keyArgs: ["limit", "offset"],
                     merge: paginationMerge,
                 },
                 partners: {
-                    keyArgs: false,
+                    keyArgs: ["limit", "offset"],
                     merge: paginationMerge,
                 },
                 managers: {
-                    keyArgs: false,
+                    keyArgs: ["limit", "offset"],
                     merge: paginationMerge,
                 },
             },
@@ -140,7 +140,7 @@ const cache = new InMemoryCache({
         WorkPackageResponse: {
             fields: {
                 deliverables: {
-                    keyArgs: false,
+                    keyArgs: ["limit", "offset", "isSubmitted"],
                     merge: paginationMerge,
                 },
             },

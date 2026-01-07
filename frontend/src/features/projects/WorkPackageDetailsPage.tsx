@@ -17,26 +17,60 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
-import { GetWorkPackageWithDeliverablesDocument, WorkPackageResponse, UserRole } from '../../gql/graphql';
+import { GetWorkPackageWithDeliverablesDocument, WorkPackageResponse, UserRole, SubmitDeliverableDocument } from '../../gql/graphql';
 import DeliverableCreateDialog from './components/DeliverableCreateDialog';
 import { useAuth } from '../auth/AuthContext';
+import { useMutation } from '@apollo/client/react';
+import useNotification from '../../hooks/useNotification';
+import {
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    Checkbox,
+    FormControlLabel,
+    IconButton
+} from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 
 const WorkPackageDetailsPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const notification = useNotification();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [statusFilter, setStatusFilter] = useState<string>('ALL');
     const { user } = useAuth();
+
     const canCreateDeliverable = user?.role === UserRole.Admin || user?.role === UserRole.Manager;
 
-    const { data, loading, error } = useQuery(GetWorkPackageWithDeliverablesDocument, {
+    const { data, loading, error, refetch } = useQuery(GetWorkPackageWithDeliverablesDocument, {
         variables: {
             id: id!,
-            limit: 10,
-            offset: 0
+            limit: 100,
+            offset: 0,
+            isSubmitted: statusFilter === 'ALL' ? null : statusFilter === 'SUBMITTED'
         },
         skip: !id,
         fetchPolicy: 'cache-and-network',
     });
+
+    const [updateStatus] = useMutation(SubmitDeliverableDocument, {
+        onCompleted: () => {
+            notification.showSuccess('Status updated');
+            refetch();
+        },
+        onError: (err) => notification.showError(err.message)
+    });
+
+    const handleToggleStatus = (deliverableId: string, currentStatus: boolean) => {
+        updateStatus({
+            variables: {
+                id: deliverableId,
+                status: !currentStatus
+            }
+        });
+    };
 
     if (loading) {
         return (
@@ -109,31 +143,65 @@ const WorkPackageDetailsPage: React.FC = () => {
                 </Typography>
                 <Divider sx={{ my: 2 }} />
 
-                <Typography variant="h6" gutterBottom>Deliverables</Typography>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                    <Typography variant="h6">Deliverables</Typography>
+                    <FormControl size="small" sx={{ minWidth: 150 }}>
+                        <InputLabel>Status</InputLabel>
+                        <Select
+                            value={statusFilter}
+                            label="Status"
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                        >
+                            <MenuItem value="ALL">All</MenuItem>
+                            <MenuItem value="SUBMITTED">Submitted</MenuItem>
+                            <MenuItem value="PENDING">Pending</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Box>
                 {deliverables.length === 0 ? (
                     <Typography color="text.secondary">No deliverables found.</Typography>
                 ) : (
                     <List>
-                        {deliverables.map((del: any) => (
-                            <ListItem key={del.id} divider>
-                                <ListItemText
-                                    primary={del.description}
-                                    secondary={`Due: ${del.dueDate} | Assigned to: ${del.assignedUser?.username || 'Unassigned'}`}
-                                />
-                                <Box>
-                                    <Typography
-                                        variant="caption"
-                                        sx={{
-                                            px: 1, py: 0.5, borderRadius: 1,
-                                            bgcolor: del.isSubmitted ? 'success.light' : 'warning.light',
-                                            color: del.isSubmitted ? 'success.contrastText' : 'warning.contrastText'
-                                        }}
-                                    >
-                                        {del.isSubmitted ? 'Submitted' : 'Pending'}
-                                    </Typography>
-                                </Box>
-                            </ListItem>
-                        ))}
+                        {deliverables.map((del: any) => {
+                            const canToggle = user?.role === UserRole.Admin ||
+                                (user?.role === UserRole.Manager) ||
+                                (user?.role === UserRole.Partner && del.assignedTo === user.id);
+
+                            return (
+                                <ListItem
+                                    key={del.id}
+                                    divider
+                                    secondaryAction={
+                                        canToggle && (
+                                            <IconButton
+                                                edge="end"
+                                                onClick={() => handleToggleStatus(del.id, del.isSubmitted)}
+                                                color={del.isSubmitted ? "success" : "default"}
+                                            >
+                                                {del.isSubmitted ? <CheckCircleIcon /> : <RadioButtonUncheckedIcon />}
+                                            </IconButton>
+                                        )
+                                    }
+                                >
+                                    <ListItemText
+                                        primary={del.description}
+                                        secondary={`Due: ${del.dueDate} | Assigned to: ${del.assignedUser?.username || 'Unassigned'}`}
+                                    />
+                                    <Box sx={{ mr: 4 }}>
+                                        <Typography
+                                            variant="caption"
+                                            sx={{
+                                                px: 1, py: 0.5, borderRadius: 1,
+                                                bgcolor: del.isSubmitted ? 'success.light' : 'warning.light',
+                                                color: del.isSubmitted ? 'success.contrastText' : 'warning.contrastText'
+                                            }}
+                                        >
+                                            {del.isSubmitted ? 'Submitted' : 'Pending'}
+                                        </Typography>
+                                    </Box>
+                                </ListItem>
+                            );
+                        })}
                     </List>
                 )}
             </Paper>
@@ -144,6 +212,7 @@ const WorkPackageDetailsPage: React.FC = () => {
                     onClose={() => setIsDialogOpen(false)}
                     workPackageId={id!}
                     partners={partners}
+                    onCreated={refetch}
                 />
             )}
         </Container>

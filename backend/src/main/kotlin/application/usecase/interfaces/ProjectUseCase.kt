@@ -11,8 +11,11 @@ interface ProjectUseCase {
     fun getProjectPartners(projectId: String, limit: Int, offset: Int): Page<String>
     fun getProjectManagers(projectId: String, limit: Int, offset: Int): Page<String>
     fun createProject(dto: ProjectInputContract, user: UserJwt): Project
+    fun updateProject(id: String, dto: ProjectInputContract): Project
     fun deleteProject(id: String): Boolean
     fun addPartnerToProject(projectId: String, partnerId: String, user: UserJwt): Project
     fun addWorkPackageToProject(projectId: String, workPackageId: String, user: UserJwt): Project
     fun addManagerToProject(projectId: String, managerId: String, user: UserJwt): Project
+    fun removePartnerFromProject(projectId: String, partnerId: String, user: UserJwt): Project
+    fun removeManagerFromProject(projectId: String, managerId: String, user: UserJwt): Project
 }

@@ -14,29 +14,30 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { GetOrganizationsDocument, AssignPartnerToProjectDocument } from '../../../gql/graphql';
+import { GetUsersDocument, AssignPartnerToProjectDocument, UserRole } from '../../../gql/graphql';
 import useNotification from '../../../hooks/useNotification';
 
 interface AddPartnerDialogProps {
     open: boolean;
     onClose: () => void;
     projectId: string;
+    existingIds: string[];
     onAdded: () => void;
 }
 
 const schema = z.object({
-    partnerId: z.string().min(1, "Please select an organization"),
+    partnerId: z.string().min(1, "Please select a partner user"),
 });
 
 type FormValues = z.infer<typeof schema>;
 
-const AddPartnerDialog: React.FC<AddPartnerDialogProps> = ({ open, onClose, projectId, onAdded }) => {
+const AddPartnerDialog: React.FC<AddPartnerDialogProps> = ({ open, onClose, projectId, existingIds, onAdded }) => {
     const notification = useNotification();
     const { control, handleSubmit, reset } = useForm<FormValues>({
         resolver: zodResolver(schema),
     });
 
-    const { data: orgsData, loading: orgsLoading } = useQuery(GetOrganizationsDocument, {
+    const { data: usersData, loading: usersLoading } = useQuery(GetUsersDocument, {
         variables: { limit: 100, offset: 0 },
         fetchPolicy: 'network-only',
     });
@@ -66,14 +67,16 @@ const AddPartnerDialog: React.FC<AddPartnerDialogProps> = ({ open, onClose, proj
         });
     };
 
-    const organizations = orgsData?.organizations?.items || [];
+    const partnerUsers = usersData?.users?.items?.filter(u =>
+        u.role === UserRole.Partner && !existingIds.includes(u.id)
+    ) || [];
 
     return (
         <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
             <DialogTitle>Add Partner to Project</DialogTitle>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <DialogContent>
-                    {orgsLoading ? (
+                    {usersLoading ? (
                         <Box display="flex" justifyContent="center" p={2}>
                             <CircularProgress />
                         </Box>
@@ -86,15 +89,15 @@ const AddPartnerDialog: React.FC<AddPartnerDialogProps> = ({ open, onClose, proj
                                 <TextField
                                     {...field}
                                     select
-                                    label="Select Organization"
+                                    label="Select Partner User"
                                     fullWidth
                                     margin="normal"
                                     error={!!control.getFieldState("partnerId").error}
                                     helperText={control.getFieldState("partnerId").error?.message}
                                 >
-                                    {organizations.map((org: any) => (
-                                        <MenuItem key={org.id} value={org.id}>
-                                            {org.name} ({org.country})
+                                    {partnerUsers.map((user: any) => (
+                                        <MenuItem key={user.id} value={user.id}>
+                                            {user.username} ({user.email})
                                         </MenuItem>
                                     ))}
                                 </TextField>

@@ -11,8 +11,16 @@ class InMemoryDeliverableRepository : DeliverableRepository {
             .drop(offset)
             .take(minOf(limit, 100))
 
+    override fun findByWorkPackageIdAndStatus(workPackageId: String, status: Boolean, limit: Int, offset: Int): List<Deliverable> =
+        deliverables.filter { it.workPackageId == workPackageId && it.isSubmitted == status }
+            .drop(offset)
+            .take(minOf(limit, 100))
+
     override fun countByWorkPackageId(workPackageId: String): Int =
         deliverables.count { it.workPackageId == workPackageId }
+
+    override fun countByWorkPackageIdAndStatus(workPackageId: String, status: Boolean): Int =
+        deliverables.count { it.workPackageId == workPackageId && it.isSubmitted == status }
 
     override fun findById(id: String): Deliverable? = deliverables.find { it.id == id }
 

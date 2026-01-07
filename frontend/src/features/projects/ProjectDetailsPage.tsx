@@ -23,10 +23,11 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import PersonIcon from '@mui/icons-material/Person';
 import BusinessIcon from '@mui/icons-material/Business';
-import { GetProjectDocument, ProjectStatus, UserRole } from '../../gql/graphql';
+import { GetProjectDocument, ProjectStatus, UserRole, ProjectResponse } from '../../gql/graphql';
 import { useAuth } from '../auth/AuthContext';
 import ProjectWorkPackageList from './components/ProjectWorkPackageList';
 import ProjectTeamList from './components/ProjectTeamList';
+import EditProjectDialog from './components/EditProjectDialog';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -59,8 +60,9 @@ const ProjectDetailsPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const [value, setValue] = React.useState(0);
+    const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
-    const { data, loading, error } = useQuery(GetProjectDocument, {
+    const { data, loading, error, refetch } = useQuery(GetProjectDocument, {
         variables: { id: id! },
         skip: !id,
         fetchPolicy: 'cache-and-network',
@@ -140,8 +142,7 @@ const ProjectDetailsPage: React.FC = () => {
                                 variant="contained"
                                 color="secondary"
                                 startIcon={<EditIcon />}
-                                disabled
-                                title="Editing projects is not currently supported by the backend."
+                                onClick={() => setIsEditDialogOpen(true)}
                             >
                                 Edit Project
                             </Button>
@@ -153,7 +154,7 @@ const ProjectDetailsPage: React.FC = () => {
                     <Tabs value={value} onChange={handleChange} aria-label="project tabs">
                         <Tab label="Overview" />
                         <Tab label="Work Packages" />
-                        <Tab label="Team" />
+                        {user?.role !== UserRole.Partner && <Tab label="Team" />}
                     </Tabs>
                 </Box>
 
@@ -180,10 +181,21 @@ const ProjectDetailsPage: React.FC = () => {
                     <ProjectWorkPackageList projectId={id!} />
                 </CustomTabPanel>
 
-                <CustomTabPanel value={value} index={2}>
-                    <ProjectTeamList projectId={id!} />
-                </CustomTabPanel>
+                {user?.role !== UserRole.Partner && (
+                    <CustomTabPanel value={value} index={2}>
+                        <ProjectTeamList projectId={id!} />
+                    </CustomTabPanel>
+                )}
             </Paper>
+
+            {isEditDialogOpen && project && (
+                <EditProjectDialog
+                    open={isEditDialogOpen}
+                    onClose={() => setIsEditDialogOpen(false)}
+                    project={project as ProjectResponse}
+                    onUpdated={() => refetch()}
+                />
+            )}
         </Container>
     );
 };
