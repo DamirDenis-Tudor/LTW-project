@@ -11,17 +11,18 @@ const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_
 
 const database = new DatabaseStack(app, 'LTW-DatabaseStack', { env });
 const auth = new AuthStack(app, 'LTW-AuthStack', { env });
+const frontend = new FrontendStack(app, 'LTW-FrontendStack', { env });
 
 const backend = new BackendStack(app, 'LTW-BackendStack', {
   env,
   tables: database.tables,
   userPool: auth.userPool,
   userPoolClient: auth.userPoolClient,
+  allowedOrigin: frontend.distribution.distributionDomainName,
 });
 backend.addDependency(database);
 backend.addDependency(auth);
-
-const frontend = new FrontendStack(app, 'LTW-FrontendStack', { env });
+backend.addDependency(frontend);
 
 const pipeline = new PipelineStack(app, 'LTW-PipelineStack', {
   env,

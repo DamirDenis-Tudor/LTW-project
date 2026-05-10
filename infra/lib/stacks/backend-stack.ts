@@ -12,6 +12,7 @@ interface BackendStackProps extends cdk.StackProps {
   tables: Record<string, dynamodb.Table>;
   userPool: cognito.UserPool;
   userPoolClient: cognito.UserPoolClient;
+  allowedOrigin?: string;
 }
 
 export class BackendStack extends cdk.Stack {
@@ -60,6 +61,7 @@ export class BackendStack extends cdk.Stack {
         COGNITO_USER_POOL_ID: props.userPool.userPoolId,
         COGNITO_CLIENT_ID: props.userPoolClient.userPoolClientId,
         AWS_REGION: this.region,
+        ...(props.allowedOrigin && { ALLOWED_ORIGIN: props.allowedOrigin }),
       },
       portMappings: [{ containerPort: 8080 }],
     });

@@ -48,6 +48,7 @@ fun main() {
 fun Application.module() {
     install(CORS) {
         allowHost("localhost:3000", schemes = listOf("http", "https"))
+        System.getenv("ALLOWED_ORIGIN")?.let { allowHost(it, schemes = listOf("https")) }
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Authorization)
         allowMethod(HttpMethod.Options)
