@@ -3,6 +3,7 @@ package application.usecase.implementation
 import application.common.Page
 import application.input.UserInputContract
 import application.usecase.interfaces.UserUseCase
+import application.usecase.interfaces.JwtUseCase
 import application.exception.NotFoundException
 import application.usecase.interfaces.AuthProvider
 import domain.model.User
@@ -11,6 +12,7 @@ import domain.model.Project
 import domain.repository.UserRepository
 import domain.repository.OrganizationRepository
 import domain.repository.ProjectRepository
+import org.koin.core.context.GlobalContext
 import java.security.MessageDigest
 import java.util.*
 
@@ -79,7 +81,23 @@ class UserUseCaseImpl(
     }
 
     override fun login(username: String, password: String): String? {
-        return authProvider.authenticate(username, password)
+        val token = authProvider.authenticate(username, password) ?: return null
+
+        // Ensure user exists in DB (handles case where user exists in Cognito but not DB)
+        if (userRepository.findByUsername(username).isFailure) {
+            val decoded = GlobalContext.get().get<JwtUseCase>().verifyToken(token)
+            val user = User(
+                id = decoded.id,
+                username = decoded.username,
+                email = "",
+                passwordHash = "",
+                role = decoded.role,
+                organizationId = decoded.organizationId
+            )
+            userRepository.save(user)
+        }
+
+        return token
     }
 
     private fun hashPassword(password: String): String =

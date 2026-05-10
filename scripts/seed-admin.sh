@@ -7,7 +7,7 @@ USER_POOL_ID=$(aws cloudformation describe-stacks --stack-name LTW-AuthStack --r
   --query 'Stacks[0].Outputs[?OutputKey==`UserPoolId`].OutputValue' --output text)
 
 USERNAME="admin"
-PASSWORD="Admin123!"
+PASSWORD="admin123"
 EMAIL="admin@ltw-project.com"
 
 echo "Creating admin user in pool: $USER_POOL_ID"
