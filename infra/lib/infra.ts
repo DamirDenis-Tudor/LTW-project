@@ -4,6 +4,7 @@ import { DatabaseStack } from './stacks/database-stack';
 import { AuthStack } from './stacks/auth-stack';
 import { BackendStack } from './stacks/backend-stack';
 import { FrontendStack } from './stacks/frontend-stack';
+import { PipelineStack } from './stacks/pipeline-stack';
 
 const app = new cdk.App();
 const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
@@ -21,3 +22,16 @@ backend.addDependency(database);
 backend.addDependency(auth);
 
 const frontend = new FrontendStack(app, 'LTW-FrontendStack', { env });
+
+const pipeline = new PipelineStack(app, 'LTW-PipelineStack', {
+  env,
+  repository: backend.repository,
+  service: backend.service,
+  frontendBucket: frontend.bucket,
+  distributionId: frontend.distribution.distributionId,
+  backendUrl: `http://${backend.albDnsName}/graphql`,
+  githubOwner: 'DamirDenis-Tudor',
+  githubRepo: 'LTW-project',
+});
+pipeline.addDependency(backend);
+pipeline.addDependency(frontend);

@@ -4,6 +4,7 @@ import application.common.Page
 import application.input.UserInputContract
 import application.usecase.interfaces.UserUseCase
 import application.exception.NotFoundException
+import application.usecase.interfaces.AuthProvider
 import domain.model.User
 import domain.model.Organization
 import domain.model.Project
@@ -16,7 +17,8 @@ import java.util.*
 class UserUseCaseImpl(
     private val userRepository: UserRepository,
     private val organizationRepository: OrganizationRepository,
-    private val projectRepository: ProjectRepository
+    private val projectRepository: ProjectRepository,
+    private val authProvider: AuthProvider
 ) : UserUseCase {
     
     override fun getAllUsers(limit: Int, offset: Int): Page<User> {
@@ -62,7 +64,9 @@ class UserUseCaseImpl(
         dto.organizationId?.let { orgId ->
             organizationRepository.findById(orgId) ?: throw NotFoundException("Organization not found")
         }
-        
+
+        authProvider.createUser(dto.username, dto.email, dto.password, dto.role)
+
         val user = User(
             id = UUID.randomUUID().toString(),
             username = dto.username,

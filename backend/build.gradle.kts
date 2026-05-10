@@ -23,6 +23,11 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     implementation(libs.koin.core)
     implementation(libs.koin.ktor)
+
+    // AWS SDK
+    implementation(libs.aws.dynamodb)
+    implementation(libs.aws.cognito)
+
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
 }

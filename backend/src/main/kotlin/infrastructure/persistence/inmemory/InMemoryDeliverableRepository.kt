@@ -1,4 +1,4 @@
-package infrastructure.persistence.repositories
+package infrastructure.persistence.inmemory
 
 import domain.model.Deliverable
 import domain.repository.DeliverableRepository

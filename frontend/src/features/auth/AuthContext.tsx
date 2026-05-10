@@ -1,6 +1,16 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { User, UserRole, JwtPayload } from '../../types';
+import { User, UserRole } from '../../types';
+
+interface CognitoJwtPayload {
+    sub: string;
+    'cognito:username'?: string;
+    'cognito:groups'?: string[];
+    username?: string;
+    role?: UserRole;
+    email?: string;
+    exp: number;
+}
 
 interface AuthContextType {
     user: User | null;
@@ -26,7 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const login = useCallback((newToken: string) => {
         try {
-            const decoded = jwtDecode<JwtPayload>(newToken);
+            const decoded = jwtDecode<CognitoJwtPayload>(newToken);
             const currentTime = Date.now() / 1000;
 
             if (decoded.exp < currentTime) {
@@ -36,11 +46,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             localStorage.setItem('auth_token', newToken);
             setToken(newToken);
+
+            // Handle both Cognito and local JWT formats
+            const username = decoded['cognito:username'] || decoded.username || '';
+            const groups = decoded['cognito:groups'] || [];
+            const role = decoded.role || groups.find(g => Object.values(UserRole).includes(g as UserRole)) as UserRole || UserRole.Partner;
+
             setUser({
                 id: decoded.sub,
-                username: decoded.username,
-                role: decoded.role,
-                email: '', // Email might not be in JWT, will be fetched if needed or added to JWT
+                username,
+                role,
+                email: decoded.email || '',
             });
         } catch (error) {
             console.error('Invalid token:', error);

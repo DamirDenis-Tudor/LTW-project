@@ -3,9 +3,10 @@ package infrastructure.graphql.context
 import application.common.UserJwt
 import application.exception.AuthenticationException
 import application.exception.AuthorizationException
-import application.usecase.implementation.JwtUseCaseImpl
+import application.usecase.interfaces.JwtUseCase
 import domain.model.UserRole
 import graphql.GraphQLContext
+import org.koin.core.context.GlobalContext
 
 fun GraphQLContext.getCurrentUser(): UserJwt? = get("currentUser")
 fun GraphQLContext.getToken(): String? = get("token")
@@ -13,7 +14,7 @@ fun GraphQLContext.getToken(): String? = get("token")
 inline fun <T> GraphQLContext.requireUser(action: (UserJwt) -> T): T {
     val userJwt = getCurrentUser() ?: getToken()?.let { token ->
         try {
-            JwtUseCaseImpl.verifyToken(token)
+            GlobalContext.get().get<JwtUseCase>().verifyToken(token)
         } catch (e: Exception) {
             throw AuthenticationException("Invalid token")
         }
@@ -28,7 +29,7 @@ inline fun <T> GraphQLContext.validateRoles(
 ): T {
     val userJwt = getCurrentUser() ?: getToken()?.let { token ->
         try {
-            JwtUseCaseImpl.verifyToken(token)
+            GlobalContext.get().get<JwtUseCase>().verifyToken(token)
         } catch (e: Exception) {
             throw AuthenticationException("Invalid token")
         }

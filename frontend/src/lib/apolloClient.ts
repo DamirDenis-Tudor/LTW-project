@@ -8,7 +8,7 @@ import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { NotificationService } from '../utils/notificationService';
 
-const GRAPHQL_ENDPOINT = 'http://localhost:8080/graphql';
+const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_URL || 'http://localhost:8080/graphql';
 
 // HTTP Link - connection to GraphQL server
 const httpLink = createHttpLink({

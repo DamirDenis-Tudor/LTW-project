@@ -16,6 +16,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useMutation } from '@apollo/client/react';
 import { useAuth } from './AuthContext';
 import { AuthenticateDocument } from '../../gql/graphql';
+import { cognitoLogin, isUsingCognito } from '../../lib/cognitoAuth';
 
 const loginSchema = z.object({
     username: z.string().min(1, 'Username is required'),
@@ -29,6 +30,7 @@ const LoginPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const {
         register,
@@ -38,7 +40,7 @@ const LoginPage: React.FC = () => {
         resolver: zodResolver(loginSchema),
     });
 
-    const [authenticate, { loading }] = useMutation(AuthenticateDocument, {
+    const [authenticate] = useMutation(AuthenticateDocument, {
         onCompleted: (data: { authenticate: string }) => {
             if (data?.authenticate) {
                 login(data.authenticate);
@@ -48,17 +50,28 @@ const LoginPage: React.FC = () => {
         },
         onError: (err: any) => {
             setError(err.message || 'Failed to login. Please check your credentials.');
+            setLoading(false);
         },
     });
 
-    const onSubmit = (data: LoginFormValues) => {
+    const onSubmit = async (data: LoginFormValues) => {
         setError(null);
-        authenticate({
-            variables: {
-                username: data.username,
-                password: data.password,
-            },
-        });
+        setLoading(true);
+
+        if (isUsingCognito()) {
+            try {
+                const token = await cognitoLogin(data.username, data.password);
+                login(token);
+                const origin = (location.state as any)?.from?.pathname || '/';
+                navigate(origin);
+            } catch (err: any) {
+                setError(err.message || 'Failed to login.');
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            authenticate({ variables: { username: data.username, password: data.password } });
+        }
     };
 
     return (
