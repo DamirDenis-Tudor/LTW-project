@@ -1,0 +1,151 @@
+enum ProjectStatus {
+  ACTIVE
+  ARCHIVED
+  COMPLETED
+  DRAFT
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  PARTNER
+}
+
+type DeliverableResponse {
+  id: String!
+  description: String!
+  dueDate: String!
+  isSubmitted: Boolean!
+  workPackageId: String!
+  assignedTo: String
+  assignedUser: UserResponse
+  workPackage: WorkPackageResponse
+}
+
+type OrganizationResponse {
+  id: String!
+  name: String!
+  country: String!
+  picCode: Int!
+  users(limit: Int!, offset: Int!): PaginatedUsers!
+}
+
+type ProjectResponse {
+  id: String!
+  title: String!
+  acronym: String!
+  status: ProjectStatus!
+  workPackages(limit: Int!, offset: Int!): PaginatedWorkPackages!
+  managers(limit: Int!, offset: Int!): PaginatedUsers!
+  partners(limit: Int!, offset: Int!): PaginatedUsers!
+}
+
+type UserResponse {
+  id: String!
+  username: String!
+  email: String!
+  role: UserRole!
+  organizationId: String
+  organization: OrganizationResponse
+  managedProjects(limit: Int!, offset: Int!): PaginatedProjects!
+  partnerProjects(limit: Int!, offset: Int!): PaginatedProjects!
+}
+
+type WorkPackageResponse {
+  id: String!
+  title: String!
+  wpNumber: Int!
+  leadPartner: UserResponse
+  project: ProjectResponse
+  deliverables(limit: Int!, offset: Int!, isSubmitted: Boolean): PaginatedDeliverables!
+}
+
+type PaginatedDeliverables {
+  items: [DeliverableResponse!]!
+  totalCount: Int!
+  hasNextPage: Boolean!
+}
+
+type PaginatedOrganizations {
+  items: [OrganizationResponse!]!
+  totalCount: Int!
+  hasNextPage: Boolean!
+}
+
+type PaginatedProjects {
+  items: [ProjectResponse!]!
+  totalCount: Int!
+  hasNextPage: Boolean!
+}
+
+type PaginatedUsers {
+  items: [UserResponse!]!
+  totalCount: Int!
+  hasNextPage: Boolean!
+}
+
+type PaginatedWorkPackages {
+  items: [WorkPackageResponse!]!
+  totalCount: Int!
+  hasNextPage: Boolean!
+}
+
+input DeliverableInput {
+  description: String!
+  dueDate: String!
+  assignedTo: String
+}
+
+input OrganizationInput {
+  name: String!
+  country: String!
+  picCode: Int!
+}
+
+input ProjectInput {
+  title: String!
+  acronym: String!
+  status: ProjectStatus!
+}
+
+input UserInput {
+  username: String!
+  email: String!
+  password: String!
+  role: UserRole!
+  organizationId: String
+}
+
+input WorkPackageInput {
+  title: String!
+  wpNumber: Int!
+  projectId: String!
+  leadPartnerId: String!
+}
+
+type Query {
+  projects(limit: Int!, offset: Int!): PaginatedProjects!
+  project(id: String!): ProjectResponse!
+  users(limit: Int!, offset: Int!): PaginatedUsers!
+  user(id: String!): UserResponse
+  organizations(limit: Int!, offset: Int!): PaginatedOrganizations!
+  workPackage(id: String!): WorkPackageResponse
+}
+
+type Mutation {
+  authenticate(username: String!, password: String!): String!
+  createProject(input: ProjectInput!): ProjectResponse!
+  updateProject(id: String!, input: ProjectInput!): ProjectResponse!
+  removeProject(id: String!): Boolean!
+  assignManagerToProject(projectId: String!, managerId: String!): ProjectResponse!
+  removeManagerFromProject(projectId: String!, managerId: String!): ProjectResponse!
+  assignPartnerToProject(projectId: String!, partnerId: String!): ProjectResponse!
+  removePartnerFromProject(projectId: String!, partnerId: String!): ProjectResponse!
+  assignWorkPackageToProject(projectId: String!, workPackageId: String!): ProjectResponse!
+  createWorkPackage(input: WorkPackageInput!): WorkPackageResponse!
+  removeWorkPackage(id: String!): Boolean!
+  createDeliverable(wpId: String!, input: DeliverableInput!): DeliverableResponse!
+  submitDeliverable(id: String!, status: Boolean!): DeliverableResponse!
+  registerUser(input: UserInput!): UserResponse!
+  createOrganization(input: OrganizationInput!): OrganizationResponse!
+}
