@@ -11,18 +11,21 @@ const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_
 
 const database = new DatabaseStack(app, 'LTW-DatabaseStack', { env });
 const auth = new AuthStack(app, 'LTW-AuthStack', { env });
-const frontend = new FrontendStack(app, 'LTW-FrontendStack', { env });
 
 const backend = new BackendStack(app, 'LTW-BackendStack', {
   env,
   tables: database.tables,
   userPool: auth.userPool,
   userPoolClient: auth.userPoolClient,
-  allowedOrigin: frontend.distribution.distributionDomainName,
 });
 backend.addDependency(database);
 backend.addDependency(auth);
-backend.addDependency(frontend);
+
+const frontend = new FrontendStack(app, 'LTW-FrontendStack', {
+  env,
+  backendAlbDnsName: backend.albDnsName,
+});
+frontend.addDependency(backend);
 
 const pipeline = new PipelineStack(app, 'LTW-PipelineStack', {
   env,
@@ -30,7 +33,7 @@ const pipeline = new PipelineStack(app, 'LTW-PipelineStack', {
   service: backend.service,
   frontendBucket: frontend.bucket,
   distributionId: frontend.distribution.distributionId,
-  backendUrl: `http://${backend.albDnsName}/graphql`,
+  backendUrl: `/graphql`,
   githubOwner: 'DamirDenis-Tudor',
   githubRepo: 'LTW-project',
 });
