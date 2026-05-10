@@ -1,7 +1,6 @@
 package infrastructure.graphql.mutation
 
 import application.exception.AuthenticationException
-import application.usecase.implementation.JwtUseCaseImpl
 import application.usecase.interfaces.UserUseCase
 import com.expediagroup.graphql.server.operations.Mutation
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
@@ -21,9 +20,8 @@ class UserMutation : Mutation {
         @GraphQLDescription("Username for authentication") username: String,
         @GraphQLDescription("Password for authentication") password: String
     ): String {
-        val user = userUseCase.login(username, password)
+        return userUseCase.login(username, password)
             ?: throw AuthenticationException("Invalid credentials")
-        return JwtUseCaseImpl.generateToken(user)
     }
 
     @GraphQLDescription("Register a new user (Admin only)")

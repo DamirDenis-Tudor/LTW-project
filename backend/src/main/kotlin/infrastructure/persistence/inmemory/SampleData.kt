@@ -1,4 +1,4 @@
-package infrastructure.persistence
+package infrastructure.persistence.inmemory
 
 import application.common.UserJwt
 import application.usecase.interfaces.*

@@ -3,10 +3,10 @@ package infrastructure.auth.di
 import org.koin.dsl.module
 import application.usecase.interfaces.JwtUseCase
 import application.usecase.interfaces.AuthProvider
-import application.usecase.implementation.JwtUseCaseImpl
-import infrastructure.auth.NoOpAuthProvider
+import infrastructure.auth.local.LocalJwtVerifier
+import infrastructure.auth.local.LocalAuthProvider
 
 val localAuthModule = module {
-    single<JwtUseCase> { JwtUseCaseImpl }
-    single<AuthProvider> { NoOpAuthProvider }
+    single<JwtUseCase> { LocalJwtVerifier }
+    single<AuthProvider> { LocalAuthProvider(get(), get()) }
 }

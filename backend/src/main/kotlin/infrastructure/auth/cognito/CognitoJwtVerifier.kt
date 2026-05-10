@@ -1,4 +1,4 @@
-package infrastructure.auth
+package infrastructure.auth.cognito
 
 import application.common.UserJwt
 import application.usecase.interfaces.JwtUseCase

@@ -20,7 +20,7 @@ import infrastructure.persistence.di.inMemoryPersistenceModule
 import infrastructure.persistence.di.dynamoPersistenceModule
 import infrastructure.auth.di.localAuthModule
 import infrastructure.auth.di.cloudAuthModule
-import infrastructure.persistence.initializeSampleData
+import infrastructure.persistence.inmemory.initializeSampleData
 
 fun localModules(): List<Module> = listOf(
     inMemoryPersistenceModule,

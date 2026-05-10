@@ -3,8 +3,8 @@ package infrastructure.auth.di
 import org.koin.dsl.module
 import application.usecase.interfaces.JwtUseCase
 import application.usecase.interfaces.AuthProvider
-import infrastructure.auth.CognitoJwtVerifier
-import infrastructure.auth.CognitoAuthProvider
+import infrastructure.auth.cognito.CognitoJwtVerifier
+import infrastructure.auth.cognito.CognitoAuthProvider
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient
 
 val cloudAuthModule = module {
@@ -16,6 +16,6 @@ val cloudAuthModule = module {
         )
     }
     single<AuthProvider> {
-        CognitoAuthProvider(get(), System.getenv("COGNITO_USER_POOL_ID"))
+        CognitoAuthProvider(get(), System.getenv("COGNITO_USER_POOL_ID"), System.getenv("COGNITO_CLIENT_ID"))
     }
 }

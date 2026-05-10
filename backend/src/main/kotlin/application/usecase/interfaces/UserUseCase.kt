@@ -14,5 +14,5 @@ interface UserUseCase {
     fun getUserManagedProjects(userId: String, limit: Int, offset: Int): Page<Project>
     fun getUserPartnerProjects(userId: String, limit: Int, offset: Int): Page<Project>
     fun createUser(dto: UserInputContract): User
-    fun login(username: String, password: String): User?
+    fun login(username: String, password: String): String?
 }

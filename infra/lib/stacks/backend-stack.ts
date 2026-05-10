@@ -69,7 +69,7 @@ export class BackendStack extends cdk.Stack {
     this.service = new ecs.FargateService(this, 'BackendService', {
       cluster,
       taskDefinition: taskDef,
-      desiredCount: 1,
+      desiredCount: 0,
       assignPublicIp: false,
       circuitBreaker: { rollback: true },
       minHealthyPercent: 100,

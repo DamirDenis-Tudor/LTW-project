@@ -78,9 +78,8 @@ class UserUseCaseImpl(
         return userRepository.save(user)
     }
 
-    override fun login(username: String, password: String): User? {
-        val user = userRepository.findByUsername(username).getOrNull()
-        return if (user != null && user.passwordHash == hashPassword(password)) user else null
+    override fun login(username: String, password: String): String? {
+        return authProvider.authenticate(username, password)
     }
 
     private fun hashPassword(password: String): String =

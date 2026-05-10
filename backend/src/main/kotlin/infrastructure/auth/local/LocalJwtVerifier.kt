@@ -1,4 +1,4 @@
-package application.usecase.implementation
+package infrastructure.auth.local
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
@@ -8,11 +8,11 @@ import domain.model.User
 import domain.model.UserRole
 import java.util.*
 
-object JwtUseCaseImpl : JwtUseCase {
+object LocalJwtVerifier : JwtUseCase {
     private val secret = "eu-project-secret"
     private val algorithm = Algorithm.HMAC256(secret)
     private val issuer = "eu-project-manager"
-    
+
     override fun generateToken(user: User): String {
         return JWT.create()
             .withIssuer(issuer)
@@ -20,16 +20,16 @@ object JwtUseCaseImpl : JwtUseCase {
             .withClaim("username", user.username)
             .withClaim("role", user.role.name)
             .withClaim("organizationId", user.organizationId)
-            .withExpiresAt(Date(System.currentTimeMillis() + 3600000 * 10)) // 1 hour
+            .withExpiresAt(Date(System.currentTimeMillis() + 3600000 * 10))
             .sign(algorithm)
     }
-    
+
     override fun verifyToken(token: String): UserJwt {
         val jwt = JWT.require(algorithm)
             .withIssuer(issuer)
             .build()
             .verify(token)
-        
+
         return UserJwt(
             id = jwt.subject,
             username = jwt.getClaim("username").asString(),
