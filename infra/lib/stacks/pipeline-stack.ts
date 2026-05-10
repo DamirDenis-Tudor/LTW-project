@@ -34,7 +34,7 @@ export class PipelineStack extends cdk.Stack {
       repo: props.githubRepo,
       branch: props.githubBranch || 'main',
       output: sourceOutput,
-      connectionArn: cdk.Fn.importValue('GitHubConnectionArn'), // create connection manually in console
+      connectionArn: this.node.tryGetContext('githubConnectionArn') || cdk.Fn.importValue('GitHubConnectionArn'),
     });
 
     // Backend Build: Docker → ECR

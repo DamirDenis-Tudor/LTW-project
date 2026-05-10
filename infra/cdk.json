@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node --prefer-ts-exts bin/infra.ts",
+  "app": "npx ts-node --prefer-ts-exts lib/infra.ts",
   "watch": {
     "include": [
       "**"
@@ -17,6 +17,7 @@
     ]
   },
   "context": {
+    "githubConnectionArn": "arn:aws:codeconnections:us-east-1:843447461095:connection/a170eda9-7f4e-42a9-a186-d1f24c36a1ef",
     "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true,
     "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": true,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
