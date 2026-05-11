@@ -3,11 +3,13 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.response.*
 import io.ktor.server.plugins.cors.routing.CORS
 import org.koin.core.module.Module
 import org.koin.core.context.GlobalContext
 import org.koin.ktor.plugin.Koin
+import org.slf4j.LoggerFactory
 import application.di.useCaseModule
 import application.exception.AlreadyExistsException
 import application.exception.AuthenticationException
@@ -46,6 +48,10 @@ fun main() {
 }
 
 fun Application.module() {
+    val logger = LoggerFactory.getLogger("Application")
+
+    install(CallLogging)
+
     install(CORS) {
         anyHost()
         allowHeader(HttpHeaders.ContentType)
@@ -75,16 +81,24 @@ fun Application.module() {
 
     install(StatusPages) {
         exception<AuthenticationException> { call, cause ->
+            logger.warn("Auth error: ${cause.message}")
             call.respond(HttpStatusCode.Unauthorized, cause.message ?: "Authentication required")
         }
         exception<AuthorizationException> { call, cause ->
+            logger.warn("Authorization error: ${cause.message}")
             call.respond(HttpStatusCode.Forbidden, cause.message ?: "Insufficient permissions")
         }
         exception<NotFoundException> { call, cause ->
+            logger.warn("Not found: ${cause.message}")
             call.respond(HttpStatusCode.NotFound, cause.message ?: "Not found")
         }
         exception<AlreadyExistsException> { call, cause ->
+            logger.warn("Conflict: ${cause.message}")
             call.respond(HttpStatusCode.Conflict, cause.message ?: "Already exists")
+        }
+        exception<Throwable> { call, cause ->
+            logger.error("Unhandled exception", cause)
+            call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Internal server error")
         }
     }
 
