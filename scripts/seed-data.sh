@@ -120,7 +120,10 @@ echo "Creating projects..."
 PRJ1=$(gql_id "$(gql "$TOKEN" 'mutation { createProject(input: {title: \"European AI Research\", acronym: \"EAIR\", status: ACTIVE}) { id } }')")
 PRJ2=$(gql_id "$(gql "$TOKEN" 'mutation { createProject(input: {title: \"Digital Innovation Platform\", acronym: \"DIP\", status: DRAFT}) { id } }')")
 PRJ3=$(gql_id "$(gql "$TOKEN" 'mutation { createProject(input: {title: \"Sustainable Technology Solutions\", acronym: \"STS\", status: COMPLETED}) { id } }')")
-echo "  PRJ1=$PRJ1 PRJ2=$PRJ2 PRJ3=$PRJ3"
+PRJ4=$(gql_id "$(gql "$TOKEN" 'mutation { createProject(input: {title: \"Green Energy Transition\", acronym: \"GET\", status: ACTIVE}) { id } }')")
+PRJ5=$(gql_id "$(gql "$TOKEN" 'mutation { createProject(input: {title: \"Smart Cities Infrastructure\", acronym: \"SCI\", status: DRAFT}) { id } }')")
+PRJ6=$(gql_id "$(gql "$TOKEN" 'mutation { createProject(input: {title: \"Quantum Computing Applications\", acronym: \"QCA\", status: ACTIVE}) { id } }')")
+echo "  PRJ1=$PRJ1 PRJ2=$PRJ2 PRJ3=$PRJ3 PRJ4=$PRJ4 PRJ5=$PRJ5 PRJ6=$PRJ6"
 
 # Assign team members
 echo "Assigning team members..."
@@ -128,6 +131,10 @@ gql "$TOKEN" "mutation { assignManagerToProject(projectId: \\\"$PRJ1\\\", manage
 gql "$TOKEN" "mutation { assignManagerToProject(projectId: \\\"$PRJ2\\\", managerId: \\\"$MGR2\\\") { id } }" > /dev/null
 gql "$TOKEN" "mutation { assignManagerToProject(projectId: \\\"$PRJ3\\\", managerId: \\\"$MGR1\\\") { id } }" > /dev/null
 gql "$TOKEN" "mutation { assignManagerToProject(projectId: \\\"$PRJ3\\\", managerId: \\\"$MGR2\\\") { id } }" > /dev/null
+gql "$TOKEN" "mutation { assignManagerToProject(projectId: \\\"$PRJ4\\\", managerId: \\\"$MGR1\\\") { id } }" > /dev/null
+gql "$TOKEN" "mutation { assignManagerToProject(projectId: \\\"$PRJ5\\\", managerId: \\\"$MGR2\\\") { id } }" > /dev/null
+gql "$TOKEN" "mutation { assignManagerToProject(projectId: \\\"$PRJ6\\\", managerId: \\\"$MGR1\\\") { id } }" > /dev/null
+gql "$TOKEN" "mutation { assignManagerToProject(projectId: \\\"$PRJ6\\\", managerId: \\\"$MGR2\\\") { id } }" > /dev/null
 gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ1\\\", partnerId: \\\"$PTR1\\\") { id } }" > /dev/null
 gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ1\\\", partnerId: \\\"$PTR2\\\") { id } }" > /dev/null
 gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ2\\\", partnerId: \\\"$PTR2\\\") { id } }" > /dev/null
@@ -135,6 +142,15 @@ gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ2\\\", partne
 gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ2\\\", partnerId: \\\"$PTR4\\\") { id } }" > /dev/null
 gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ3\\\", partnerId: \\\"$PTR1\\\") { id } }" > /dev/null
 gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ3\\\", partnerId: \\\"$PTR3\\\") { id } }" > /dev/null
+gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ4\\\", partnerId: \\\"$PTR1\\\") { id } }" > /dev/null
+gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ4\\\", partnerId: \\\"$PTR3\\\") { id } }" > /dev/null
+gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ4\\\", partnerId: \\\"$PTR4\\\") { id } }" > /dev/null
+gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ5\\\", partnerId: \\\"$PTR2\\\") { id } }" > /dev/null
+gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ5\\\", partnerId: \\\"$PTR4\\\") { id } }" > /dev/null
+gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ6\\\", partnerId: \\\"$PTR1\\\") { id } }" > /dev/null
+gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ6\\\", partnerId: \\\"$PTR2\\\") { id } }" > /dev/null
+gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ6\\\", partnerId: \\\"$PTR3\\\") { id } }" > /dev/null
+gql "$TOKEN" "mutation { assignPartnerToProject(projectId: \\\"$PRJ6\\\", partnerId: \\\"$PTR4\\\") { id } }" > /dev/null
 echo "  Done"
 
 # Create work packages
@@ -143,23 +159,68 @@ R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ1\\\",
 echo "  WP1: $R"; WP1=$(gql_id "$R")
 R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ1\\\", wpNumber: 2, title: \\\"Development Phase\\\", leadPartnerId: \\\"$PTR2\\\"}) { id } }")
 echo "  WP2: $R"; WP2=$(gql_id "$R")
-R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ2\\\", wpNumber: 1, title: \\\"Platform Design\\\", leadPartnerId: \\\"$PTR3\\\"}) { id } }")
+R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ1\\\", wpNumber: 3, title: \\\"Testing and Validation\\\", leadPartnerId: \\\"$PTR1\\\"}) { id } }")
 echo "  WP3: $R"; WP3=$(gql_id "$R")
-R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ2\\\", wpNumber: 2, title: \\\"Implementation\\\", leadPartnerId: \\\"$PTR4\\\"}) { id } }")
+R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ2\\\", wpNumber: 1, title: \\\"Platform Design\\\", leadPartnerId: \\\"$PTR3\\\"}) { id } }")
 echo "  WP4: $R"; WP4=$(gql_id "$R")
-R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ3\\\", wpNumber: 1, title: \\\"Final Report\\\", leadPartnerId: \\\"$PTR1\\\"}) { id } }")
+R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ2\\\", wpNumber: 2, title: \\\"Implementation\\\", leadPartnerId: \\\"$PTR4\\\"}) { id } }")
 echo "  WP5: $R"; WP5=$(gql_id "$R")
-echo "  WP1=$WP1 WP2=$WP2 WP3=$WP3 WP4=$WP4 WP5=$WP5"
+R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ3\\\", wpNumber: 1, title: \\\"Final Report\\\", leadPartnerId: \\\"$PTR1\\\"}) { id } }")
+echo "  WP6: $R"; WP6=$(gql_id "$R")
+R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ4\\\", wpNumber: 1, title: \\\"Energy Audit\\\", leadPartnerId: \\\"$PTR1\\\"}) { id } }")
+echo "  WP7: $R"; WP7=$(gql_id "$R")
+R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ4\\\", wpNumber: 2, title: \\\"Renewable Integration\\\", leadPartnerId: \\\"$PTR3\\\"}) { id } }")
+echo "  WP8: $R"; WP8=$(gql_id "$R")
+R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ4\\\", wpNumber: 3, title: \\\"Policy Recommendations\\\", leadPartnerId: \\\"$PTR4\\\"}) { id } }")
+echo "  WP9: $R"; WP9=$(gql_id "$R")
+R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ5\\\", wpNumber: 1, title: \\\"IoT Sensor Network\\\", leadPartnerId: \\\"$PTR2\\\"}) { id } }")
+echo "  WP10: $R"; WP10=$(gql_id "$R")
+R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ5\\\", wpNumber: 2, title: \\\"Data Analytics Dashboard\\\", leadPartnerId: \\\"$PTR4\\\"}) { id } }")
+echo "  WP11: $R"; WP11=$(gql_id "$R")
+R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ6\\\", wpNumber: 1, title: \\\"Algorithm Design\\\", leadPartnerId: \\\"$PTR1\\\"}) { id } }")
+echo "  WP12: $R"; WP12=$(gql_id "$R")
+R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ6\\\", wpNumber: 2, title: \\\"Hardware Integration\\\", leadPartnerId: \\\"$PTR2\\\"}) { id } }")
+echo "  WP13: $R"; WP13=$(gql_id "$R")
+R=$(gql "$TOKEN" "mutation { createWorkPackage(input: {projectId: \\\"$PRJ6\\\", wpNumber: 3, title: \\\"Benchmarking\\\", leadPartnerId: \\\"$PTR3\\\"}) { id } }")
+echo "  WP14: $R"; WP14=$(gql_id "$R")
 
 # Create deliverables
 echo "Creating deliverables..."
+# PRJ1 - European AI Research
 gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP1\\\", input: {description: \\\"Research report\\\", dueDate: \\\"2024-12-31\\\", assignedTo: \\\"$PTR1\\\"}) { id } }" > /dev/null
 gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP1\\\", input: {description: \\\"Literature review\\\", dueDate: \\\"2024-11-30\\\", assignedTo: \\\"$PTR1\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP1\\\", input: {description: \\\"Dataset collection\\\", dueDate: \\\"2024-10-15\\\", assignedTo: \\\"$PTR2\\\"}) { id } }" > /dev/null
 gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP2\\\", input: {description: \\\"Prototype development\\\", dueDate: \\\"2025-03-31\\\", assignedTo: \\\"$PTR2\\\"}) { id } }" > /dev/null
-gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP3\\\", input: {description: \\\"System architecture\\\", dueDate: \\\"2024-10-15\\\", assignedTo: \\\"$PTR3\\\"}) { id } }" > /dev/null
-gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP4\\\", input: {description: \\\"Beta version\\\", dueDate: \\\"2025-01-15\\\", assignedTo: \\\"$PTR4\\\"}) { id } }" > /dev/null
-gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP5\\\", input: {description: \\\"Final project report\\\", dueDate: \\\"2024-09-30\\\", assignedTo: \\\"$PTR1\\\"}) { id } }" > /dev/null
-echo "  Created 6 deliverables"
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP2\\\", input: {description: \\\"API documentation\\\", dueDate: \\\"2025-02-28\\\", assignedTo: \\\"$PTR1\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP3\\\", input: {description: \\\"Test plan\\\", dueDate: \\\"2025-04-30\\\", assignedTo: \\\"$PTR1\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP3\\\", input: {description: \\\"Validation results\\\", dueDate: \\\"2025-05-31\\\", assignedTo: \\\"$PTR2\\\"}) { id } }" > /dev/null
+# PRJ2 - Digital Innovation Platform
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP4\\\", input: {description: \\\"System architecture\\\", dueDate: \\\"2024-10-15\\\", assignedTo: \\\"$PTR3\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP4\\\", input: {description: \\\"UX wireframes\\\", dueDate: \\\"2024-11-01\\\", assignedTo: \\\"$PTR4\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP5\\\", input: {description: \\\"Beta version\\\", dueDate: \\\"2025-01-15\\\", assignedTo: \\\"$PTR4\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP5\\\", input: {description: \\\"User acceptance testing\\\", dueDate: \\\"2025-02-15\\\", assignedTo: \\\"$PTR3\\\"}) { id } }" > /dev/null
+# PRJ3 - Sustainable Technology Solutions
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP6\\\", input: {description: \\\"Final project report\\\", dueDate: \\\"2024-09-30\\\", assignedTo: \\\"$PTR1\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP6\\\", input: {description: \\\"Financial summary\\\", dueDate: \\\"2024-09-30\\\", assignedTo: \\\"$PTR3\\\"}) { id } }" > /dev/null
+# PRJ4 - Green Energy Transition
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP7\\\", input: {description: \\\"Energy consumption baseline\\\", dueDate: \\\"2025-01-31\\\", assignedTo: \\\"$PTR1\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP7\\\", input: {description: \\\"Carbon footprint analysis\\\", dueDate: \\\"2025-02-28\\\", assignedTo: \\\"$PTR3\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP8\\\", input: {description: \\\"Solar panel feasibility study\\\", dueDate: \\\"2025-03-31\\\", assignedTo: \\\"$PTR3\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP8\\\", input: {description: \\\"Grid integration plan\\\", dueDate: \\\"2025-04-30\\\", assignedTo: \\\"$PTR4\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP9\\\", input: {description: \\\"Policy white paper\\\", dueDate: \\\"2025-06-30\\\", assignedTo: \\\"$PTR4\\\"}) { id } }" > /dev/null
+# PRJ5 - Smart Cities Infrastructure
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP10\\\", input: {description: \\\"Sensor deployment plan\\\", dueDate: \\\"2025-02-28\\\", assignedTo: \\\"$PTR2\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP10\\\", input: {description: \\\"Network topology design\\\", dueDate: \\\"2025-03-15\\\", assignedTo: \\\"$PTR4\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP11\\\", input: {description: \\\"Dashboard mockups\\\", dueDate: \\\"2025-04-15\\\", assignedTo: \\\"$PTR4\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP11\\\", input: {description: \\\"Real-time data pipeline\\\", dueDate: \\\"2025-05-31\\\", assignedTo: \\\"$PTR2\\\"}) { id } }" > /dev/null
+# PRJ6 - Quantum Computing Applications
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP12\\\", input: {description: \\\"Quantum algorithm survey\\\", dueDate: \\\"2025-01-31\\\", assignedTo: \\\"$PTR1\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP12\\\", input: {description: \\\"Optimization algorithm prototype\\\", dueDate: \\\"2025-03-31\\\", assignedTo: \\\"$PTR2\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP13\\\", input: {description: \\\"QPU access setup\\\", dueDate: \\\"2025-02-15\\\", assignedTo: \\\"$PTR2\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP13\\\", input: {description: \\\"Hybrid classical-quantum interface\\\", dueDate: \\\"2025-04-30\\\", assignedTo: \\\"$PTR3\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP14\\\", input: {description: \\\"Performance benchmarks\\\", dueDate: \\\"2025-05-31\\\", assignedTo: \\\"$PTR3\\\"}) { id } }" > /dev/null
+gql "$TOKEN" "mutation { createDeliverable(wpId: \\\"$WP14\\\", input: {description: \\\"Comparison with classical methods\\\", dueDate: \\\"2025-06-30\\\", assignedTo: \\\"$PTR4\\\"}) { id } }" > /dev/null
+echo "  Created 28 deliverables"
 
 echo ""
 echo "✅ Seed complete!"
