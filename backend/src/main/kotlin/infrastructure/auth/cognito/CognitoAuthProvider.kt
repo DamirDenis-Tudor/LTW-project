@@ -24,9 +24,9 @@ class CognitoAuthProvider(
         }
     }
 
-    override fun createUser(username: String, email: String, password: String, role: UserRole) {
-        runCatching {
-            cognitoClient.adminCreateUser(AdminCreateUserRequest.builder()
+    override fun createUser(username: String, email: String, password: String, role: UserRole): String {
+        val result = runCatching {
+            val createResult = cognitoClient.adminCreateUser(AdminCreateUserRequest.builder()
                 .userPoolId(userPoolId)
                 .username(username)
                 .temporaryPassword(password)
@@ -49,6 +49,8 @@ class CognitoAuthProvider(
                 .username(username)
                 .groupName(role.name)
                 .build())
+
+            createResult.user().attributes().first { it.name() == "sub" }.value()
         }.onFailure {
             runCatching {
                 cognitoClient.adminDeleteUser(AdminDeleteUserRequest.builder()
@@ -58,6 +60,7 @@ class CognitoAuthProvider(
             }
             throw RuntimeException("Failed to register user in Cognito.")
         }
+        return result.getOrThrow()
     }
 
     override fun deleteUser(username: String) {

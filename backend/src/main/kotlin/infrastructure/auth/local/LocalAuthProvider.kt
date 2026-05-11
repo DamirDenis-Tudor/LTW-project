@@ -17,7 +17,7 @@ class LocalAuthProvider(
         return jwtUseCase.generateToken(user)
     }
 
-    override fun createUser(username: String, email: String, password: String, role: UserRole) {}
+    override fun createUser(username: String, email: String, password: String, role: UserRole): String = java.util.UUID.randomUUID().toString()
     override fun deleteUser(username: String) {}
 
     private fun hashPassword(password: String): String =

@@ -70,10 +70,10 @@ class UserUseCaseImpl(
             organizationRepository.findById(orgId) ?: throw NotFoundException("Organization not found")
         }
 
-        authProvider.createUser(dto.username, dto.email, dto.password, dto.role)
+        val cognitoSub = authProvider.createUser(dto.username, dto.email, dto.password, dto.role)
 
         val user = User(
-            id = UUID.randomUUID().toString(),
+            id = cognitoSub,
             username = dto.username,
             email = dto.email,
             passwordHash = hashPassword(dto.password),
