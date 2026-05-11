@@ -39,7 +39,7 @@ workspace {
                     tags "Amazon Web Services - Fargate"
 
                     auth = component "infrastructure.auth" "CognitoAuthProvider, CognitoJwtVerifier, LocalAuthProvider, LocalJwtVerifier" "AWS SDK, nimbus-jose-jwt"
-                    graphql = component "infrastructure.graphql" "GraphQLConfig, ProjectQuery, UserQuery, OrganizationQuery, WorkPackageQuery, UserMutation, ProjectMutation, OrganizationMutation, WorkPackageMutation, DeliverableMutation, GraphQLContextFactory" "graphql-kotlin, Ktor"
+                    graphql = component "infrastructure.api.graphql" "GraphQLConfig, ProjectQuery, UserQuery, OrganizationQuery, WorkPackageQuery, UserMutation, ProjectMutation, OrganizationMutation, WorkPackageMutation, DeliverableMutation, GraphQLContextFactory" "graphql-kotlin, Ktor"
                     persistence = component "infrastructure.persistence" "DynamoUserRepository, DynamoOrganizationRepository, DynamoProjectRepository, DynamoWorkPackageRepository, DynamoDeliverableRepository" "AWS DynamoDB SDK"
                     usecases = component "application.usecase" "UserUseCaseImpl, ProjectUseCaseImpl, OrganizationUseCaseImpl, WorkPackageUseCaseImpl, DeliverableUseCaseImpl, AuthProvider (interface), JwtUseCase (interface)" "Kotlin"
                     domainModel = component "domain.model" "User, Project, Organization, WorkPackage, Deliverable, UserRole" "Kotlin data classes"

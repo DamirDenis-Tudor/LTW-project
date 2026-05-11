@@ -4,7 +4,7 @@ import application.common.UserJwt
 import application.usecase.interfaces.*
 import domain.model.ProjectStatus
 import domain.model.UserRole
-import infrastructure.graphql.dto.input.*
+import infrastructure.api.graphql.dto.input.*
 
 fun initializeSampleData(
     userUseCase: UserUseCase,

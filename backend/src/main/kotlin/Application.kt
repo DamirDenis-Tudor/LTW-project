@@ -17,8 +17,8 @@ import application.exception.AuthenticationException
 import application.exception.AuthorizationException
 import application.exception.NotFoundException
 import application.usecase.interfaces.*
-import infrastructure.graphql.configureGraphQL
-import infrastructure.graphql.di.graphQLModule
+import infrastructure.api.graphql.configureGraphQL
+import infrastructure.api.graphql.di.graphQLModule
 import infrastructure.persistence.di.inMemoryPersistenceModule
 import infrastructure.persistence.di.dynamoPersistenceModule
 import infrastructure.auth.di.localAuthModule
