@@ -14,6 +14,7 @@ import domain.repository.DeliverableRepository
 import domain.repository.ProjectRepository
 import domain.repository.WorkPackageRepository
 import domain.repository.UserRepository
+import org.slf4j.LoggerFactory
 import java.util.*
 
 class DeliverableUseCaseImpl(
@@ -22,6 +23,7 @@ class DeliverableUseCaseImpl(
     private val workPackageRepository: WorkPackageRepository,
     private val userRepository: UserRepository
 ) : DeliverableUseCase {
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun getDeliverablesByWorkPackageId(
         workPackageId: String,
@@ -50,6 +52,7 @@ class DeliverableUseCaseImpl(
     }
 
     override fun createDeliverable(wpId: String, dto: DeliverableInputContract): Deliverable {
+        log.info("createDeliverable(wpId=$wpId, desc=${dto.description})")
         workPackageRepository.findById(wpId) ?: throw NotFoundException("WorkPackage not found")
         dto.assignedTo?.let { userId ->
             userRepository.findById(userId).getOrNull() ?: throw NotFoundException("Assigned user not found")

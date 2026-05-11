@@ -2,10 +2,12 @@ package infrastructure.persistence.dynamodb
 
 import domain.model.Deliverable
 import domain.repository.DeliverableRepository
+import org.slf4j.LoggerFactory
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.*
 
 class DynamoDeliverableRepository(private val client: DynamoDbClient) : DeliverableRepository {
+    private val log = LoggerFactory.getLogger(javaClass)
     private val table = "LTW_Deliverables"
 
     override fun findByWorkPackageId(workPackageId: String, status: Boolean?, limit: Int, offset: Int): List<Deliverable> =
@@ -20,12 +22,15 @@ class DynamoDeliverableRepository(private val client: DynamoDbClient) : Delivera
             .let { list -> status?.let { s -> list.filter { it.isSubmitted == s } } ?: list }
             .size
 
-    override fun findById(id: String): Deliverable? =
-        client.getItem(GetItemRequest.builder().tableName(table)
+    override fun findById(id: String): Deliverable? {
+        log.info("findById(id=$id)")
+        return client.getItem(GetItemRequest.builder().tableName(table)
             .key(mapOf("id" to AttributeValue.builder().s(id).build())).build())
             .item()?.takeIf { it.isNotEmpty() }?.toDeliverable()
+    }
 
     override fun save(deliverable: Deliverable): Deliverable {
+        log.info("save(id=${deliverable.id}, desc=${deliverable.description})")
         val item = mutableMapOf(
             "id" to AttributeValue.builder().s(deliverable.id).build(),
             "workPackageId" to AttributeValue.builder().s(deliverable.workPackageId).build(),

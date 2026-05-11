@@ -3,22 +3,28 @@ package infrastructure.persistence.dynamodb
 import domain.model.Project
 import domain.model.ProjectStatus
 import domain.repository.ProjectRepository
+import org.slf4j.LoggerFactory
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.*
 
 class DynamoProjectRepository(private val client: DynamoDbClient) : ProjectRepository {
+    private val log = LoggerFactory.getLogger(javaClass)
     private val table = "LTW_Projects"
 
-    override fun findAll(limit: Int, offset: Int): List<Project> =
-        scanAll().drop(offset).take(limit)
+    override fun findAll(limit: Int, offset: Int): List<Project> {
+        log.info("findAll(limit=$limit, offset=$offset)")
+        return scanAll().drop(offset).take(limit)
+    }
 
     override fun count(): Int =
         client.scan(ScanRequest.builder().tableName(table).select(Select.COUNT).build()).count()
 
-    override fun findById(id: String): Project? =
-        client.getItem(GetItemRequest.builder().tableName(table)
+    override fun findById(id: String): Project? {
+        log.info("findById(id=$id)")
+        return client.getItem(GetItemRequest.builder().tableName(table)
             .key(mapOf("id" to AttributeValue.builder().s(id).build())).build())
             .item()?.takeIf { it.isNotEmpty() }?.toProject()
+    }
 
     override fun findByManagerId(managerId: String, limit: Int, offset: Int): List<Project> =
         scanAll().filter { managerId in it.managerIds }.drop(offset).take(limit)
@@ -48,6 +54,7 @@ class DynamoProjectRepository(private val client: DynamoDbClient) : ProjectRepos
         scanAll().any { userId in it.managerIds && workPackageId in it.workPackageIds }
 
     override fun save(project: Project): Project {
+        log.info("save(id=${project.id}, title=${project.title})")
         val item = mutableMapOf(
             "id" to AttributeValue.builder().s(project.id).build(),
             "title" to AttributeValue.builder().s(project.title).build(),

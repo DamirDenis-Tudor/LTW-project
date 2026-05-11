@@ -3,6 +3,7 @@ set -e
 
 API_URL="${1:-https://djjggwiyzlv6w.cloudfront.net/graphql}"
 REGION="us-east-1"
+export AWS_PAGER=""
 USER_POOL_ID=$(aws cognito-idp list-user-pools --max-results 10 --region $REGION --query 'UserPools[?Name==`ltw-users`].Id' --output text)
 
 echo "=== Cleaning existing data ==="

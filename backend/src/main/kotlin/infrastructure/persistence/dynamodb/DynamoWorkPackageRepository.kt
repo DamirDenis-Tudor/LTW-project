@@ -2,10 +2,12 @@ package infrastructure.persistence.dynamodb
 
 import domain.model.WorkPackage
 import domain.repository.WorkPackageRepository
+import org.slf4j.LoggerFactory
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.*
 
 class DynamoWorkPackageRepository(private val client: DynamoDbClient) : WorkPackageRepository {
+    private val log = LoggerFactory.getLogger(javaClass)
     private val table = "LTW_WorkPackages"
 
     override fun findByProjectId(projectId: String, limit: Int, offset: Int): List<WorkPackage> =
@@ -14,12 +16,15 @@ class DynamoWorkPackageRepository(private val client: DynamoDbClient) : WorkPack
     override fun countByProjectId(projectId: String): Int =
         scanAll().count { it.projectId == projectId }
 
-    override fun findById(id: String): WorkPackage? =
-        client.getItem(GetItemRequest.builder().tableName(table)
+    override fun findById(id: String): WorkPackage? {
+        log.info("findById(id=$id)")
+        return client.getItem(GetItemRequest.builder().tableName(table)
             .key(mapOf("id" to AttributeValue.builder().s(id).build())).build())
             .item()?.takeIf { it.isNotEmpty() }?.toWorkPackage()
+    }
 
     override fun save(workPackage: WorkPackage): WorkPackage {
+        log.info("save(id=${workPackage.id}, title=${workPackage.title})")
         client.putItem(PutItemRequest.builder().tableName(table).item(mapOf(
             "id" to AttributeValue.builder().s(workPackage.id).build(),
             "projectId" to AttributeValue.builder().s(workPackage.projectId).build(),

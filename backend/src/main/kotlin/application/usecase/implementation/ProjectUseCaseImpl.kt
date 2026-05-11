@@ -9,9 +9,11 @@ import domain.repository.ProjectRepository
 import application.exception.NotFoundException
 import application.exception.AuthorizationException
 import application.exception.AlreadyExistsException
+import org.slf4j.LoggerFactory
 import java.util.*
 
 class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : ProjectUseCase {
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun getAllProjects(limit: Int, offset: Int, user: UserJwt): Page<Project> {
         val projects = when (user.role) {
@@ -61,6 +63,7 @@ class ProjectUseCaseImpl(private val projectRepository: ProjectRepository) : Pro
     }
 
     override fun createProject(dto: ProjectInputContract, user: UserJwt): Project {
+        log.info("createProject(title=${dto.title}, acronym=${dto.acronym})")
         var managerIds = ArrayList<String>()
         if (user.role == UserRole.MANAGER) managerIds.add(user.id)
         val project = Project(

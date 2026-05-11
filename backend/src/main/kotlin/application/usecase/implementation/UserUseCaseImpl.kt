@@ -13,6 +13,7 @@ import domain.repository.UserRepository
 import domain.repository.OrganizationRepository
 import domain.repository.ProjectRepository
 import org.koin.core.context.GlobalContext
+import org.slf4j.LoggerFactory
 import java.security.MessageDigest
 import java.util.*
 
@@ -22,6 +23,7 @@ class UserUseCaseImpl(
     private val projectRepository: ProjectRepository,
     private val authProvider: AuthProvider
 ) : UserUseCase {
+    private val log = LoggerFactory.getLogger(javaClass)
     
     override fun getAllUsers(limit: Int, offset: Int): Page<User> {
         val users = userRepository.findAll(minOf(limit, 100), offset)
@@ -63,6 +65,7 @@ class UserUseCaseImpl(
     }
 
     override fun createUser(dto: UserInputContract): User {
+        log.info("createUser(username=${dto.username}, role=${dto.role}, orgId=${dto.organizationId})")
         dto.organizationId?.let { orgId ->
             organizationRepository.findById(orgId) ?: throw NotFoundException("Organization not found")
         }
@@ -77,6 +80,7 @@ class UserUseCaseImpl(
             role = dto.role,
             organizationId = dto.organizationId
         )
+        log.info("Saving user to DB: id=${user.id}")
         return userRepository.save(user)
     }
 

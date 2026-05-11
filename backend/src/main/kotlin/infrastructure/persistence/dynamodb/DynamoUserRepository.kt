@@ -3,28 +3,36 @@ package infrastructure.persistence.dynamodb
 import domain.model.User
 import domain.model.UserRole
 import domain.repository.UserRepository
+import org.slf4j.LoggerFactory
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.*
 
 class DynamoUserRepository(private val client: DynamoDbClient) : UserRepository {
+    private val log = LoggerFactory.getLogger(javaClass)
     private val table = "LTW_Users"
 
-    override fun findAll(limit: Int, offset: Int): List<User> =
-        client.scan(ScanRequest.builder().tableName(table).build())
+    override fun findAll(limit: Int, offset: Int): List<User> {
+        log.info("findAll(limit=$limit, offset=$offset)")
+        return client.scan(ScanRequest.builder().tableName(table).build())
             .items().map { it.toUser() }.drop(offset).take(limit)
+    }
 
     override fun count(): Int =
         client.scan(ScanRequest.builder().tableName(table).select(Select.COUNT).build()).count()
 
-    override fun findById(id: String): Result<User> =
-        client.getItem(GetItemRequest.builder().tableName(table)
+    override fun findById(id: String): Result<User> {
+        log.info("findById(id=$id)")
+        return client.getItem(GetItemRequest.builder().tableName(table)
             .key(mapOf("id" to AttributeValue.builder().s(id).build())).build())
             .item()?.takeIf { it.isNotEmpty() }?.toUser()?.let { Result.success(it) }
             ?: Result.failure(NoSuchElementException("User not found"))
+    }
 
-    override fun findByUsername(username: String): Result<User> =
-        findAll(Int.MAX_VALUE, 0).find { it.username == username }?.let { Result.success(it) }
+    override fun findByUsername(username: String): Result<User> {
+        log.info("findByUsername(username=$username)")
+        return findAll(Int.MAX_VALUE, 0).find { it.username == username }?.let { Result.success(it) }
             ?: Result.failure(NoSuchElementException("User not found"))
+    }
 
     override fun findByOrganizationId(organizationId: String, limit: Int, offset: Int): List<User> =
         findAll(Int.MAX_VALUE, 0).filter { it.organizationId == organizationId }.drop(offset).take(limit)
@@ -36,6 +44,7 @@ class DynamoUserRepository(private val client: DynamoDbClient) : UserRepository 
         ids.mapNotNull { findById(it).getOrNull() }
 
     override fun save(user: User): User {
+        log.info("save(id=${user.id}, username=${user.username}, role=${user.role})")
         val item = mutableMapOf(
             "id" to AttributeValue.builder().s(user.id).build(),
             "username" to AttributeValue.builder().s(user.username).build(),

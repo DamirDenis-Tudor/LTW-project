@@ -7,12 +7,14 @@ import domain.model.Organization
 import domain.model.User
 import domain.repository.OrganizationRepository
 import domain.repository.UserRepository
+import org.slf4j.LoggerFactory
 import java.util.*
 
 class OrganizationUseCaseImpl(
     private val organizationRepository: OrganizationRepository,
     private val userRepository: UserRepository
 ) : OrganizationUseCase {
+    private val log = LoggerFactory.getLogger(javaClass)
     
     override fun getOrganizations(limit: Int, offset: Int): Page<Organization> {
         val organizations = organizationRepository.findAll(minOf(limit, 100), offset)
@@ -35,6 +37,7 @@ class OrganizationUseCaseImpl(
     }
 
     override fun createOrganization(dto: OrganizationInputContract): Organization {
+        log.info("createOrganization(name=${dto.name}, country=${dto.country})")
         val organization = Organization(
             id = UUID.randomUUID().toString(),
             name = dto.name,

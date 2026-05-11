@@ -84,7 +84,7 @@ export class BackendStack extends cdk.Stack {
     listener.addTargets('BackendTarget', {
       port: 8080,
       targets: [this.service],
-      healthCheck: { path: '/graphql', healthyHttpCodes: '200,405' },
+      healthCheck: { path: '/health' },
     });
 
     this.albDnsName = alb.loadBalancerDnsName;

@@ -5,6 +5,7 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import io.ktor.server.plugins.cors.routing.CORS
 import org.koin.core.module.Module
 import org.koin.core.context.GlobalContext
@@ -100,6 +101,10 @@ fun Application.module() {
             logger.error("Unhandled exception", cause)
             call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Internal server error")
         }
+    }
+
+    routing {
+        get("/health") { call.respondText("OK") }
     }
 
     configureGraphQL()

@@ -11,6 +11,7 @@ import domain.model.User
 import domain.repository.WorkPackageRepository
 import domain.repository.ProjectRepository
 import domain.repository.UserRepository
+import org.slf4j.LoggerFactory
 import java.util.*
 
 class WorkPackageUseCaseImpl(
@@ -18,6 +19,7 @@ class WorkPackageUseCaseImpl(
     private val projectRepository: ProjectRepository,
     private val userRepository: UserRepository
 ) : WorkPackageUseCase {
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun getWorkPackagesByProjectId(projectId: String, limit: Int, offset: Int, user: UserJwt): List<WorkPackage> {
         return workPackageRepository.findByProjectId(projectId, minOf(limit, 100), offset)
@@ -48,6 +50,7 @@ class WorkPackageUseCaseImpl(
     }
 
     override fun createWorkPackage(dto: WorkPackageInputContract, user: UserJwt): WorkPackage {
+        log.info("createWorkPackage(projectId=${dto.projectId}, title=${dto.title})")
         projectRepository.findById(dto.projectId) ?: throw NotFoundException("Project not found")
         userRepository.findById(dto.leadPartnerId).getOrNull() ?: throw NotFoundException("Lead partner not found")
         
