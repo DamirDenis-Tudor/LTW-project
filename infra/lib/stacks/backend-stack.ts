@@ -45,10 +45,12 @@ export class BackendStack extends cdk.Stack {
     taskDef.taskRole.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: [
         'cognito-idp:AdminCreateUser',
+        'cognito-idp:AdminSetUserPassword',
         'cognito-idp:AdminAddUserToGroup',
         'cognito-idp:AdminDeleteUser',
         'cognito-idp:AdminGetUser',
         'cognito-idp:ListUsers',
+        'cognito-idp:InitiateAuth',
       ],
       resources: [props.userPool.userPoolArn],
     }));
