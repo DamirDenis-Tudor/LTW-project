@@ -37,7 +37,7 @@ fun Application.configureGraphQL() {
     install(GraphQL) {
         schema {
             packages = listOf(
-                "infrastructure.graphql",
+                "infrastructure.api.graphql",
                 "domain.model.contracts",
                 "application.input"
             )
