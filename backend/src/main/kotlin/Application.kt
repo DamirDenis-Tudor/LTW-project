@@ -57,7 +57,7 @@ fun Application.module() {
     install(CallLogging)
 
     install(CORS) {
-        anyHost()
+        anyHost()jkjkl
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Authorization)
         allowMethod(HttpMethod.Options)
