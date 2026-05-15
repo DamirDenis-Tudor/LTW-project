@@ -57,7 +57,7 @@ fun Application.module() {
     install(CallLogging)
 
     install(CORS) {
-        anyHost()jkjkl
+        anyHost()
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Authorization)
         allowMethod(HttpMethod.Options)
@@ -107,7 +107,7 @@ fun Application.module() {
     }
 
     routing {
-        get("/health") { call.respondText("OK") }
+        get("/health") { error("test") }
     }
 
     configureGraphQL()
