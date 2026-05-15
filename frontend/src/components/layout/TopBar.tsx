@@ -37,7 +37,7 @@ const TopBar: React.FC = () => {
         >
             <Toolbar>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                    EU Project Management
+                    EU Project Management - 1310A
                 </Typography>
                 {user && (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
