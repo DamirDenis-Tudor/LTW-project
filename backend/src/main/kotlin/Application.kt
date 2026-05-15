@@ -40,15 +40,18 @@ fun cloudModules(): List<Module> = listOf(
 )
 
 fun main() {
-    embeddedServer(
-        factory = Netty,
-        port = 8080,
-        host = "0.0.0.0",
-        module = Application::module
-    ).start(wait = true)
+    error("test")
+//    embeddedServer(
+//        factory = Netty,
+//        port = 8080,
+//        host = "0.0.0.0",
+//        module = Application::module
+//    ).start(wait = true)
 }
 
 fun Application.module() {
+
+
     val logger = LoggerFactory.getLogger("Application")
 
     install(CallLogging)
